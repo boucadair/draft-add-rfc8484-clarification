@@ -150,17 +150,17 @@
           URIs."</t>
         </list></t>
 
-      <t>This seems like an internal inconsistency of <xref
-      target="RFC8484"></xref> that is worth to be clarified: is redirection
+      <t>This looks like an internal inconsistency of <xref
+      target="RFC8484"></xref> that is worth the clarification: is redirection
       allowed or not?</t>
 
       <t>Also, Section 3 of <xref target="RFC8484"></xref> indicates that:</t>
 
       <t><list style="empty">
-          <t>A DoH client MUST NOT use a different URI simply because it was
+          <t>"A DoH client MUST NOT use a different URI simply because it was
           discovered outside of the client's configuration (such as through
           HTTP/2 server push) or because a server offers an unsolicited
-          response that appears to be a valid answer to a DNS query.</t>
+          response that appears to be a valid answer to a DNS query."</t>
         </list></t>
 
       <t>Nevertheless, the specification does not:</t>
@@ -219,7 +219,7 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Many thanks to xxx for the review.</t>
+      <t>Many thanks to Christian Jacquenet for the review.</t>
     </section>
   </middle>
 

@@ -118,15 +118,15 @@ Internet-Draft            RFC8484 Clarirication               April 2020
       URIs that are not recognized by the DoH client as configured
       URIs."
 
-   This seems like an internal inconsistency of [RFC8484] that is worth
-   to be clarified: is redirection allowed or not?
+   This looks like an internal inconsistency of [RFC8484] that is worth
+   the clarification: is redirection allowed or not?
 
    Also, Section 3 of [RFC8484] indicates that:
 
-      A DoH client MUST NOT use a different URI simply because it was
+      "A DoH client MUST NOT use a different URI simply because it was
       discovered outside of the client's configuration (such as through
       HTTP/2 server push) or because a server offers an unsolicited
-      response that appears to be a valid answer to a DNS query.
+      response that appears to be a valid answer to a DNS query."
 
    Nevertheless, the specification does not:
 
@@ -190,7 +190,7 @@ Internet-Draft            RFC8484 Clarirication               April 2020
 
 7.  Acknowledgements
 
-   Many thanks to xxx for the review.
+   Many thanks to Christian Jacquenet for the review.
 
 8.  Normative References
 
