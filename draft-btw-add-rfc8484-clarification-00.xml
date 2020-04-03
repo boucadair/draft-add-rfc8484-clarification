@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references. -->
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-btw-add-rfc8484-clarification-00"
+     ipr="trust200902" updates="8484">
+  <front>
+    <title abbrev="RFC8484 Clarirication">A Clarification about Redirection
+    Support in DNS Queries over HTTPS (DoH) Specification</title>
+
+    <author fullname="Mohamed Boucadair" initials="M." surname="Boucadair">
+      <organization>Orange</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <city>Rennes</city>
+
+          <code>35000</code>
+
+          <country>France</country>
+        </postal>
+
+        <email>mohamed.boucadair@orange.com</email>
+      </address>
+    </author>
+
+    <author fullname="Neil Cook" initials="N." surname="Cook">
+      <organization>Open-Xchange</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <country>UK</country>
+        </postal>
+
+        <email>neil.cook@noware.co.uk</email>
+      </address>
+    </author>
+
+    <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
+      <organization abbrev="McAfee">McAfee, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>Embassy Golf Link Business Park</street>
+
+          <city>Bangalore</city>
+
+          <region>Karnataka</region>
+
+          <code>560071</code>
+
+          <country>India</country>
+        </postal>
+
+        <email>TirumaleswarReddy_Konda@McAfee.com</email>
+      </address>
+    </author>
+
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <country>USA</country>
+        </postal>
+
+        <email>dwing-ietf@fuggles.com</email>
+      </address>
+    </author>
+
+    <date />
+
+    <workgroup>ADD</workgroup>
+
+    <abstract>
+      <t>This document clarifies the support of redirection in the
+      DNS-over-HTTPS (DoH) specification.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>This document clarifies the intent of DNS-over-HTTPS (DoH) <xref
+      target="RFC8484"></xref> whether redirection is allowed or not. </t>
+    </section>
+
+    <section anchor="notation" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
+      only when, they appear in all capitals, as shown here.</t>
+    </section>
+
+    <section title="Discussion">
+      <t><xref target="RFC8484"></xref> indicates that the support of HTTP
+      redirection is one of DoH design goals (Section 1):<list style="empty">
+          <t> "The described approach is more than a tunnel over HTTP. It
+          establishes default media formatting types for requests and
+          responses but uses normal HTTP content negotiation mechanisms for
+          selecting alternatives that endpoints may prefer in anticipation of
+          serving new use cases. In addition to this media type negotiation,
+          it aligns itself with HTTP features such as caching, redirection,
+          proxying, authentication, and compression. </t>
+
+          <t>The integration with HTTP provides a transport suitable for both
+          existing DNS clients and native web applications seeking access to
+          the DNS."</t>
+        </list></t>
+
+      <t>Nevertheless, Section 3 of <xref target="RFC8484"></xref> indicates
+      the following:<list style="empty">
+          <t>"This specification does not extend DNS resolution privileges to
+          URIs that are not recognized by the DoH client as configured
+          URIs."</t>
+        </list></t>
+
+      <t>This seems like an internal inconsistency of <xref
+      target="RFC8484"></xref> that is worth to be clarified: is redirection
+      allowed or not?</t>
+
+      <t>Also, Section 3 of <xref target="RFC8484"></xref> indicates that:</t>
+
+      <t><list style="empty">
+          <t>A DoH client MUST NOT use a different URI simply because it was
+          discovered outside of the client's configuration (such as through
+          HTTP/2 server push) or because a server offers an unsolicited
+          response that appears to be a valid answer to a DNS query.</t>
+        </list></t>
+
+      <t>Nevertheless, the specification does not:</t>
+
+      <t><list style="symbols">
+          <t>specify under which conditions a discovered different URI can be
+          used. </t>
+
+          <t>describe how a different URI can be discovered using HTTP/2
+          server push, especially if no DoH session is established with a
+          server. The only available example in the mailing list archives
+          clarifies that server push is an example of unsolicited responses.
+          <vspace blankLines="1" />The text was updated late in the
+          publication process to address this comment:
+          https://mailarchive.ietf.org/arch/msg/doh/f_V-tBgB-KRsLZhttx9tGt75cps/.
+          The example provided in the thread (server push) is related to the
+          second part of the above excerpt.</t>
+
+          <t>clarify that unsolicited messages from a trusted DoH server
+          should be excluded.</t>
+        </list></t>
+
+      <t>A clarification is proposed in <xref target="clarification"></xref>.
+      This clarification focuses on a "different URI" that might be discovered
+      while communicating with an HTTP server.</t>
+    </section>
+
+    <section anchor="clarification" title="The Clarification">
+      <t>OLD:<list style="empty">
+          <t>A DoH client MUST NOT use a different URI simply because it was
+          discovered outside of the client's configuration (such as through
+          HTTP/2 server push) or because a server offers an unsolicited
+          response that appears to be a valid answer to a DNS query. </t>
+        </list></t>
+
+      <t>NEW<list style="empty">
+          <t>A DoH client MUST NOT use a different URI that was discovered
+          outside of the client's configuration when communicating with HTTP
+          servers (except via HTTP redirection discussed in Section 6.4 of
+          <xref target="RFC7231"></xref>). </t>
+
+          <t>Also, a DoH client MUST ignore an unsolicited response (such as
+          through HTTP/2 server push) that appears to be a valid answer to a
+          DNS query unless that response comes from a configured URI (as
+          described in Section 5.3).</t>
+        </list></t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>Security considerations are discussed in Section 9 of <xref
+      target="RFC8484"></xref>.</t>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document does not request any action from IANA.</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>Many thanks to xxx for the review.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.7231'?>
+
+      <?rfc include='reference.RFC.8174'?>
+
+      <?rfc include='reference.RFC.8484'?>
+
+      <?rfc include='reference.RFC.8310'?>
+    </references>
+  </back>
+</rfc>
