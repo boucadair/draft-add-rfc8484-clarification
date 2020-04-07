@@ -220,8 +220,7 @@
         </list></t>
     </section>
 
-    <section anchor="resolution"
-             title="Resolving the Redirect                                         Domain">
+    <section anchor="resolution" title="Resolving the Redirect Domain">
       <t>Redirection in DoH is slightly different from "regular" HTTP
       redirection, in that the DoH server may be the only configured DNS
       resolver for the client. In that case, and assuming the redirect URI

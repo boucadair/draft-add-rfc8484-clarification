@@ -68,18 +68,17 @@ Table of Contents
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   2
    4.  Clarification of Redirection in DoH Redirection in DoH  . . .   4
-   5.  Resolving the Redirect
-       Domain  . . . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   5.  Resolving the Redirect Domain . . . . . . . . . . . . . . . .   4
      5.1.  Server Push . . . . . . . . . . . . . . . . . . . . . . .   5
      5.2.  Response Body . . . . . . . . . . . . . . . . . . . . . .   6
    6.  DoH Server Redirect . . . . . . . . . . . . . . . . . . . . .   6
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
    9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
      10.1.  Normative References . . . . . . . . . . . . . . . . . .   7
      10.2.  Informative References . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
 
 1.  Introduction
 
@@ -105,7 +104,8 @@ Table of Contents
       responses but uses normal HTTP content negotiation mechanisms for
       selecting alternatives that endpoints may prefer in anticipation
       of serving new use cases.  In addition to this media type
-
+      negotiation, it aligns itself with HTTP features such as caching,
+      redirection, proxying, authentication, and compression.
 
 
 
@@ -113,9 +113,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 2]
 
 Internet-Draft               DoH Redirection                  April 2020
 
-
-      negotiation, it aligns itself with HTTP features such as caching,
-      redirection, proxying, authentication, and compression.
 
       The integration with HTTP provides a transport suitable for both
       existing DNS clients and native web applications seeking access to
@@ -162,6 +159,9 @@ Internet-Draft               DoH Redirection                  April 2020
    Additionally, assuming that redirection is allowed, this
    specification recommends how it is achieved, specifically regarding
    inline resolution of any domain name in the redirect URI.  This is
+   required because redirection to a domain-based URI requires DNS
+   resolution of that domain name, which creates a potential
+   bootstrapping problem.
 
 
 
@@ -169,10 +169,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 3]
 
 Internet-Draft               DoH Redirection                  April 2020
 
-
-   required because redirection to a domain-based URI requires DNS
-   resolution of that domain name, which creates a potential
-   bootstrapping problem.
 
 4.  Clarification of Redirection in DoH Redirection in DoH
 
@@ -217,6 +213,10 @@ Internet-Draft               DoH Redirection                  April 2020
    o  Returning the required A and/or AAAA information directly in the
       body of the redirect response (Section 5.2).
 
+   Servers supporting DoH redirect MUST support the server push
+   mechanism and SHOULD support returning the redirect response body
+   mechanism.  The reason that the server push mechanism is mandatory is
+   that it is likely to work with existing HTTP clients that support
 
 
 
@@ -226,10 +226,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 4]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   Servers supporting DoH redirect MUST support the server push
-   mechanism and SHOULD support returning the redirect response body
-   mechanism.  The reason that the server push mechanism is mandatory is
-   that it is likely to work with existing HTTP clients that support
    server push, whereas the latter mechanism is likely to require more
    effort to support.
 
@@ -273,7 +269,11 @@ Internet-Draft               DoH Redirection                  April 2020
 
    The advantage of using server push to provide the DNS resolution
    information of the redirect domain is that, assuming that the DoH
+   client already supports unsolicited server push messages, then this
+   approach should work without any changes.
 
+   Disadvantages include the possibility that DoH clients do not support
+   server push.
 
 
 
@@ -281,12 +281,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 5]
 
 Internet-Draft               DoH Redirection                  April 2020
 
-
-   client already supports unsolicited server push messages, then this
-   approach should work without any changes.
-
-   Disadvantages include the possibility that DoH clients do not support
-   server push.
 
 5.2.  Response Body
 
@@ -328,6 +322,12 @@ Internet-Draft               DoH Redirection                  April 2020
 
    Security considerations are discussed in Section 9 of [RFC8484].
 
+8.  IANA Considerations
+
+   This document does not request any action from IANA.
+
+
+
 
 
 
@@ -337,10 +337,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
-
-8.  IANA Considerations
-
-   This document does not request any action from IANA.
 
 9.  Acknowledgements
 
@@ -385,6 +381,10 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC3552, July 2003,
               <https://www.rfc-editor.org/info/rfc3552>.
 
+Authors' Addresses
+
+
+
 
 
 
@@ -393,8 +393,6 @@ Boucadair, et al.        Expires October 9, 2020                [Page 7]
 
 Internet-Draft               DoH Redirection                  April 2020
 
-
-Authors' Addresses
 
    Mohamed Boucadair
    Orange
@@ -425,6 +423,8 @@ Authors' Addresses
    USA
 
    Email: dwing-ietf@fuggles.com
+
+
 
 
 
