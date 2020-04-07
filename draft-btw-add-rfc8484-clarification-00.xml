@@ -199,7 +199,7 @@
     </section>
 
     <section anchor="clarification"
-             title="Clarification of Redirection in DoH                                          Redirection in DoH">
+             title="Clarification of Redirection in DoH Redirection in DoH">
       <t>OLD:<list style="empty">
           <t>A DoH client MUST NOT use a different URI simply because it was
           discovered outside of the client's configuration (such as through
