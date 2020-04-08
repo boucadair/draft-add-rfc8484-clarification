@@ -122,6 +122,11 @@
       redirection is performed (Sections <xref format="counter"
       target="resolution"></xref> and <xref format="counter"
       target="Server-redirect"></xref>).</t>
+
+      <t>This document adheres to Section 4.3 of <xref
+      target="I-D.ietf-httpbis-bcp56bis"></xref> which discusses the need for
+      protocols using HTTP to specify redirect handling to avoid
+      interoperability problems. </t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -170,15 +175,14 @@
           response that appears to be a valid answer to a DNS query."</t>
         </list></t>
 
-      <t>Nevertheless, the specification does not:</t>
+      <t>Nevertheless, <xref target="RFC8484"></xref> does not:</t>
 
       <t><list style="symbols">
           <t>specify under which conditions a discovered different URI can be
           used.</t>
 
           <t>describe how a different URI can be discovered using HTTP/2
-          server push, especially if no DoH session is established with a
-          server. The only available example in the mailing list archives
+          server push. The only available example in the mailing list archives
           clarifies that server push is an example of unsolicited responses.
           <vspace blankLines="1" />The text was updated late in the
           publication process to address this comment:
@@ -230,27 +234,55 @@
       uses a domain name, the client will be unable to contact the URI
       returned in the redirect response unless the DoH server provides the
       resolution information for that domain as part of the response. Even if
-      a DoH client has a plaintext DNS resolver configured, there are security
-      implications (see Section 3 of <xref target="RFC3552"></xref>) of using
-      that plaintext resolver for resolution of the domain in the redirect
-      URI.</t>
+      a DoH client has a plaintext DNS resolver configured, using that
+      resolver is considered as a privacy leakage <xref
+      target="RFC8310"></xref>.</t>
 
       <t>There are two possible approaches to resolving the redirect domain,
       which are not mutually exclusive, but may have different implications
       for clients: <list style="symbols">
-          <t>Using server push to provide the client with the required A/AAAA
-          information (<xref target="serverpush"></xref>)</t>
-
           <t>Returning the required A/AAAA information directly in the body of
           the redirect response (<xref target="responsebody"></xref>).</t>
+
+          <t>Using server push to provide the client with the required A/AAAA
+          information (<xref target="serverpush"></xref>).</t>
         </list></t>
 
-      <t>Servers supporting DoH redirect MUST support the server push
-      mechanism and SHOULD support returning the redirect response body
-      mechanism. The reason that the server push mechanism is mandatory is
-      that it is likely to work with existing HTTP clients that support server
-      push, whereas the latter mechanism is likely to require more effort to
-      support.</t>
+      <t>Servers supporting DoH redirect MUST support returning the redirect
+      response body mechanism and SHOULD support the server push mechanism.
+      Server push has some issues as discussed in Section 4.14 of <xref
+      target="I-D.ietf-httpbis-bcp56bis"></xref>.</t>
+
+      <section anchor="responsebody" title="Response Body">
+        <t>Returning the required DNS response information in the body of the
+        redirect request is another approach to achieve the same goal. </t>
+
+        <t>The approach is straightforward; the DoH server returns in the
+        response body a DNS response with an application/dns-message media
+        type as specified in Section 6 of <xref target="RFC8484"></xref>,
+        containing any A and AAAA records for the domain name in the redirect
+        URI, including any CNAMEs. For example if the redirect URI contains
+        the domain name "redirect.example.com", and "redirect.example.com" is
+        a CNAME pointing to "real.example.com", then an example response body
+        would contain: <list style="symbols">
+            <t>A CNAME record for redirect.example.com</t>
+
+            <t>Any A records for real.example.com</t>
+
+            <t>Any AAAA records for real.example.com</t>
+          </list></t>
+
+        <t>Advantages of this approach are simplicity; no client or server
+        support of server push is required, and it is also more efficient in
+        terms of the amount of data transmitted.</t>
+
+        <t>The main disadvantage is that this approach requires new code to be
+        developed in DoH clients to handle the new condition that a redirect
+        response will contain a "application/dns-message" media type in the
+        response body. DoH clients using HTTP stacks to perform redirection
+        transparently may run into problems, as this approach is specific to
+        DoH.</t>
+      </section>
 
       <section anchor="serverpush" title="Server Push">
         <t>The DoH specification allows the use of server push to send DNS
@@ -283,15 +315,16 @@
         <t><figure align="center" anchor="push"
             title="Redirect using Server Push">
             <artwork align="center"><![CDATA[
-          DoH Client                                               DoH Server
-            |                                                        |
-            |<=========== Connect & TLS Negotiation ================>|
-            |========== DNS Request for example.com/A ==============>|
-            |<===== Push Promise: GET redirect.example.com/A ========|
-            |<===== Push Promise: GET redirect.example.com/AAAA =====|
-            |<===== Redirect Response: https://redirect.example.com =|
-            |<===== Push Response for redirect.example.com/A ========|
-            |<===== Push Response for redirect.example.com/AAAA======|
+ DoH client                                             DoH server
+     |                                                        |
+     |<===== Connect & TLS Negotiation ======================>|
+     |====== DNS Request for example.com/A ==================>|
+     |<===== Push Promise: GET redirect.example.com/A ========|
+     |<===== Push Promise: GET redirect.example.com/AAAA =====|
+     |<===== Redirect Response: https://redirect.example.com =|
+     |<===== Push Response for redirect.example.com/A ========|
+     |<===== Push Response for redirect.example.com/AAAA======|
+     |                             ...                        |
           ]]></artwork>
           </figure></t>
 
@@ -302,37 +335,6 @@
 
         <t>Disadvantages include the possibility that DoH clients do not
         support server push.</t>
-      </section>
-
-      <section anchor="responsebody" title="Response Body">
-        <t>Returning the required DNS response information in the body of the
-        redirect request is another approach to achieve the same goal. </t>
-
-        <t>The approach is straightforward; the DoH server returns in the
-        response body a DNS response with an application/dns-message media
-        type as specified in Section 6 of <xref target="RFC8484"></xref>,
-        containing any A and AAAA records for the domain name in the redirect
-        URI, including any CNAMEs. For example if the redirect URI contains
-        the domain name "redirect.example.com", and "redirect.example.com" is
-        a CNAME pointing to "real.example.com", then an example response body
-        would contain: <list style="symbols">
-            <t>A CNAME record for redirect.example.com</t>
-
-            <t>Any A records for real.example.com</t>
-
-            <t>Any AAAA records for real.example.com</t>
-          </list></t>
-
-        <t>Advantages of this approach are simplicity; no client or server
-        support of server push is required, and it is also more efficient in
-        terms of the amount of data transmitted.</t>
-
-        <t>The main disadvantage is that this approach requires new code to be
-        developed in DoH clients to handle the new condition that a redirect
-        response will contain a "application/dns-message" media type in the
-        response body. DoH clients using HTTP stacks to perform redirection
-        transparently may run into problems, as this approach is specific to
-        DoH and is thus not a generic solution.</t>
       </section>
     </section>
 
@@ -389,7 +391,7 @@
     </references>
 
     <references title="Informative References">
-      <?rfc include='reference.RFC.3552'?>
+      <?rfc include='reference.I-D.ietf-httpbis-bcp56bis'?>
     </references>
   </back>
 </rfc>

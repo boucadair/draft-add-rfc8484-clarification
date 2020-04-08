@@ -69,8 +69,8 @@ Table of Contents
    3.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   2
    4.  RFC8484 Update  . . . . . . . . . . . . . . . . . . . . . . .   4
    5.  Resolving the Redirect Domain . . . . . . . . . . . . . . . .   4
-     5.1.  Server Push . . . . . . . . . . . . . . . . . . . . . . .   5
-     5.2.  Response Body . . . . . . . . . . . . . . . . . . . . . .   6
+     5.1.  Response Body . . . . . . . . . . . . . . . . . . . . . .   5
+     5.2.  Server Push . . . . . . . . . . . . . . . . . . . . . . .   5
    6.  Applicability to DoH Server Redirect  . . . . . . . . . . . .   6
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
@@ -85,6 +85,10 @@ Table of Contents
    This document clarifies the intent of DNS-over-HTTPS (DoH) [RFC8484]
    whether redirection is allowed or not (Section 4), and subsequently
    specifies how redirection is performed (Sections 5 and 6).
+
+   This document adheres to Section 4.3 of [I-D.ietf-httpbis-bcp56bis]
+   which discusses the need for protocols using HTTP to specify redirect
+   handling to avoid interoperability problems.
 
 2.  Terminology
 
@@ -101,11 +105,7 @@ Table of Contents
    [RFC8484] indicates that the support of HTTP redirection is one of
    DoH design goals (Section 1):
 
-      "The described approach is more than a tunnel over HTTP.  It
-      establishes default media formatting types for requests and
-      responses but uses normal HTTP content negotiation mechanisms for
-      selecting alternatives that endpoints may prefer in anticipation
-      of serving new use cases.  In addition to this media type
+
 
 
 
@@ -114,6 +114,11 @@ Boucadair, et al.       Expires October 10, 2020                [Page 2]
 Internet-Draft               DoH Redirection                  April 2020
 
 
+      "The described approach is more than a tunnel over HTTP.  It
+      establishes default media formatting types for requests and
+      responses but uses normal HTTP content negotiation mechanisms for
+      selecting alternatives that endpoints may prefer in anticipation
+      of serving new use cases.  In addition to this media type
       negotiation, it aligns itself with HTTP features such as caching,
       redirection, proxying, authentication, and compression.
 
@@ -137,15 +142,14 @@ Internet-Draft               DoH Redirection                  April 2020
       HTTP/2 server push) or because a server offers an unsolicited
       response that appears to be a valid answer to a DNS query."
 
-   Nevertheless, the specification does not:
+   Nevertheless, [RFC8484] does not:
 
    o  specify under which conditions a discovered different URI can be
       used.
 
    o  describe how a different URI can be discovered using HTTP/2 server
-      push, especially if no DoH session is established with a server.
-      The only available example in the mailing list archives clarifies
-      that server push is an example of unsolicited responses.
+      push.  The only available example in the mailing list archives
+      clarifies that server push is an example of unsolicited responses.
 
       The text was updated late in the publication process to address
       this comment: https://mailarchive.ietf.org/arch/msg/doh/f_V-tBgB-
@@ -159,10 +163,6 @@ Internet-Draft               DoH Redirection                  April 2020
    on a "different URI" that might be discovered while communicating
    with an HTTP server.
 
-   Additionally, assuming that redirection is allowed, this
-   specification recommends how it is achieved, specifically regarding
-   inline resolution of any domain name in the redirect URI.  This is
-
 
 
 Boucadair, et al.       Expires October 10, 2020                [Page 3]
@@ -170,6 +170,9 @@ Boucadair, et al.       Expires October 10, 2020                [Page 3]
 Internet-Draft               DoH Redirection                  April 2020
 
 
+   Additionally, assuming that redirection is allowed, this
+   specification recommends how it is achieved, specifically regarding
+   inline resolution of any domain name in the redirect URI.  This is
    required because redirection to a domain-based URI requires DNS
    resolution of that domain name, which creates a potential
    bootstrapping problem.
@@ -203,21 +206,18 @@ Internet-Draft               DoH Redirection                  April 2020
    uses a domain name, the client will be unable to contact the URI
    returned in the redirect response unless the DoH server provides the
    resolution information for that domain as part of the response.  Even
-   if a DoH client has a plaintext DNS resolver configured, there are
-   security implications (see Section 3 of [RFC3552]) of using that
-   plaintext resolver for resolution of the domain in the redirect URI.
+   if a DoH client has a plaintext DNS resolver configured, using that
+   resolver is considered as a privacy leakage [RFC8310].
 
    There are two possible approaches to resolving the redirect domain,
    which are not mutually exclusive, but may have different implications
    for clients:
 
-   o  Using server push to provide the client with the required A/AAAA
-      information (Section 5.1)
-
    o  Returning the required A/AAAA information directly in the body of
-      the redirect response (Section 5.2).
+      the redirect response (Section 5.1).
 
-
+   o  Using server push to provide the client with the required A/AAAA
+      information (Section 5.2).
 
 
 
@@ -226,71 +226,12 @@ Boucadair, et al.       Expires October 10, 2020                [Page 4]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   Servers supporting DoH redirect MUST support the server push
-   mechanism and SHOULD support returning the redirect response body
-   mechanism.  The reason that the server push mechanism is mandatory is
-   that it is likely to work with existing HTTP clients that support
-   server push, whereas the latter mechanism is likely to require more
-   effort to support.
+   Servers supporting DoH redirect MUST support returning the redirect
+   response body mechanism and SHOULD support the server push mechanism.
+   Server push has some issues as discussed in Section 4.14 of
+   [I-D.ietf-httpbis-bcp56bis].
 
-5.1.  Server Push
-
-   The DoH specification allows the use of server push to send DNS
-   responses (Section 5.3 of [RFC8484]).  The typical use case for
-   server push is when the server knows that the client will need to
-   make a request for a resource, and so provides the answer to that
-   request via the server push mechanism.  Sending answers to queries
-   implies that the DoH server performs those queries itself, or
-   retrieves them from its cache.
-
-   In this case, the DoH server knows that the DoH client will need to
-   resolve the domain returned in the redirect URI.  Therefore, after
-   receiving the initial request which would lead to a redirect
-   response, but before returning the response, the server MUST send a
-   push promise frame (Section 8.2.1 of [RFC7540]) request URL to
-   retrieve the A/AAAA resource records for the domain in the redirect
-   response (for example, if the domain has both A and AAAA records, two
-   push promise frames would be sent).  Any intermediate CNAME records
-   would result in additional push promise frames.  Promise requests
-   cannot contain a request body as specified in Section 8.2.1 of
-   [RFC7540], thus they MUST use the GET method specified in Sections
-   4.1 and 6 of [RFC8484].  The A/AAAA responses are then sent in
-   separate streams as specified in Section 8.2.2 of [RFC7540].
-   Finally, the redirect response itself is sent.
-
-   An example of the use of server push for redirection is shown in
-   Figure 1.
-
-          DoH Client                                               DoH Server
-            |                                                        |
-            |<=========== Connect & TLS Negotiation ================>|
-            |========== DNS Request for example.com/A ==============>|
-            |<===== Push Promise: GET redirect.example.com/A ========|
-            |<===== Push Promise: GET redirect.example.com/AAAA =====|
-            |<===== Redirect Response: https://redirect.example.com =|
-            |<===== Push Response for redirect.example.com/A ========|
-            |<===== Push Response for redirect.example.com/AAAA======|
-
-                   Figure 1: Redirect using Server Push
-
-
-
-
-
-Boucadair, et al.       Expires October 10, 2020                [Page 5]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
-   The advantage of using server push to provide the DNS resolution
-   information of the redirect domain is that, assuming that the DoH
-   client already supports unsolicited server push messages, then this
-   approach should work without any changes.
-
-   Disadvantages include the possibility that DoH clients do not support
-   server push.
-
-5.2.  Response Body
+5.1.  Response Body
 
    Returning the required DNS response information in the body of the
    redirect request is another approach to achieve the same goal.
@@ -319,16 +260,75 @@ Internet-Draft               DoH Redirection                  April 2020
    response will contain a "application/dns-message" media type in the
    response body.  DoH clients using HTTP stacks to perform redirection
    transparently may run into problems, as this approach is specific to
-   DoH and is thus not a generic solution.
+   DoH.
+
+5.2.  Server Push
+
+   The DoH specification allows the use of server push to send DNS
+   responses (Section 5.3 of [RFC8484]).  The typical use case for
+   server push is when the server knows that the client will need to
+   make a request for a resource, and so provides the answer to that
+   request via the server push mechanism.  Sending answers to queries
+   implies that the DoH server performs those queries itself, or
+   retrieves them from its cache.
+
+   In this case, the DoH server knows that the DoH client will need to
+   resolve the domain returned in the redirect URI.  Therefore, after
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 5]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
+   receiving the initial request which would lead to a redirect
+   response, but before returning the response, the server MUST send a
+   push promise frame (Section 8.2.1 of [RFC7540]) request URL to
+   retrieve the A/AAAA resource records for the domain in the redirect
+   response (for example, if the domain has both A and AAAA records, two
+   push promise frames would be sent).  Any intermediate CNAME records
+   would result in additional push promise frames.  Promise requests
+   cannot contain a request body as specified in Section 8.2.1 of
+   [RFC7540], thus they MUST use the GET method specified in Sections
+   4.1 and 6 of [RFC8484].  The A/AAAA responses are then sent in
+   separate streams as specified in Section 8.2.2 of [RFC7540].
+   Finally, the redirect response itself is sent.
+
+   An example of the use of server push for redirection is shown in
+   Figure 1.
+
+     DoH client                                             DoH server
+         |                                                        |
+         |<===== Connect & TLS Negotiation ======================>|
+         |====== DNS Request for example.com/A ==================>|
+         |<===== Push Promise: GET redirect.example.com/A ========|
+         |<===== Push Promise: GET redirect.example.com/AAAA =====|
+         |<===== Redirect Response: https://redirect.example.com =|
+         |<===== Push Response for redirect.example.com/A ========|
+         |<===== Push Response for redirect.example.com/AAAA======|
+         |                             ...                        |
+
+                   Figure 1: Redirect using Server Push
+
+   The advantage of using server push to provide the DNS resolution
+   information of the redirect domain is that, assuming that the DoH
+   client already supports unsolicited server push messages, then this
+   approach should work without any changes.
+
+   Disadvantages include the possibility that DoH clients do not support
+   server push.
 
 6.  Applicability to DoH Server Redirect
 
    This section specifies how DoH server redirection can be safely used
    to present a different URI to a requesting DoH client (Section 4).
    To that aim, the DoH server uses HTTP redirection (Section 6.4 in
-   [RFC7231]) and one of the mechanisms discussed in Section 5.1 to
+   [RFC7231]) and one of the mechanisms discussed in Section 5.2 to
    inform the client about the new URI and location of the DoH server.
 
+   The mechanism discussed in [RFC7838] MAY be implemented by a DoH
+   server if the DoH service is authoritatively available at a separate
 
 
 
@@ -338,8 +338,6 @@ Boucadair, et al.       Expires October 10, 2020                [Page 6]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   The mechanism discussed in [RFC7838] MAY be implemented by a DoH
-   server if the DoH service is authoritatively available at a separate
    network location.  This mechanism requires the alternative service to
    present a certificate for the origin's host name.
 
@@ -389,6 +387,8 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
+
+
 Boucadair, et al.       Expires October 10, 2020                [Page 7]
 
 Internet-Draft               DoH Redirection                  April 2020
@@ -405,10 +405,10 @@ Internet-Draft               DoH Redirection                  April 2020
 
 10.2.  Informative References
 
-   [RFC3552]  Rescorla, E. and B. Korver, "Guidelines for Writing RFC
-              Text on Security Considerations", BCP 72, RFC 3552,
-              DOI 10.17487/RFC3552, July 2003,
-              <https://www.rfc-editor.org/info/rfc3552>.
+   [I-D.ietf-httpbis-bcp56bis]
+              Nottingham, M., "Building Protocols with HTTP", draft-
+              ietf-httpbis-bcp56bis-09 (work in progress), November
+              2019.
 
 Authors' Addresses
 
