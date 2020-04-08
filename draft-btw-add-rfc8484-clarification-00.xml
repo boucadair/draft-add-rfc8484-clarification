@@ -249,7 +249,7 @@
         </list></t>
 
       <t>Servers supporting DoH redirect MUST support returning the redirect
-      response body mechanism and SHOULD support the server push mechanism.
+      response body mechanism and MAY support the server push mechanism.
       Server push has some issues as discussed in Section 4.14 of <xref
       target="I-D.ietf-httpbis-bcp56bis"></xref>.</t>
 
