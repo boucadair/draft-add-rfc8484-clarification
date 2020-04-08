@@ -344,7 +344,7 @@
       to present a different URI to a requesting DoH client (<xref
       target="clarification"></xref>). To that aim, the DoH server uses HTTP
       redirection (Section 6.4 in <xref target="RFC7231"></xref>) and one of
-      the mechanisms discussed in <xref target="serverpush"></xref> to inform
+      the mechanisms discussed in <xref target="resolution"></xref> to inform
       the client about the new URI and location of the DoH server. </t>
 
       <t>The mechanism discussed in <xref target="RFC7838"></xref> MAY be

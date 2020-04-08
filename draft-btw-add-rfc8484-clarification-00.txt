@@ -324,8 +324,8 @@ Internet-Draft               DoH Redirection                  April 2020
    This section specifies how DoH server redirection can be safely used
    to present a different URI to a requesting DoH client (Section 4).
    To that aim, the DoH server uses HTTP redirection (Section 6.4 in
-   [RFC7231]) and one of the mechanisms discussed in Section 5.2 to
-   inform the client about the new URI and location of the DoH server.
+   [RFC7231]) and one of the mechanisms discussed in Section 5 to inform
+   the client about the new URI and location of the DoH server.
 
    The mechanism discussed in [RFC7838] MAY be implemented by a DoH
    server if the DoH service is authoritatively available at a separate
