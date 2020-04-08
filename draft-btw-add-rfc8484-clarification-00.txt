@@ -349,13 +349,18 @@ Internet-Draft               DoH Redirection                  April 2020
    Section 9 of [RFC7838] describes security considerations related to
    the use of alternate services.
 
+   DNS clients that ignore authentication failures and accept spoofed
+   certificates will be subject to attacks (e.g., redirect to malicious
+   servers, intercept sensitive data).
+
 8.  IANA Considerations
 
    This document does not request any action from IANA.
 
 9.  Acknowledgements
 
-   Many thanks to Christian Jacquenet for the review.
+   Many thanks to Christian Jacquenet and Philippe Fouquart for the
+   review.
 
 10.  References
 
@@ -380,11 +385,6 @@ Internet-Draft               DoH Redirection                  April 2020
               Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
               April 2016, <https://www.rfc-editor.org/info/rfc7838>.
 
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
-
-
 
 
 
@@ -393,6 +393,10 @@ Boucadair, et al.       Expires October 10, 2020                [Page 7]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
    [RFC8310]  Dickinson, S., Gillmor, D., and T. Reddy, "Usage Profiles
               for DNS over TLS and DNS over DTLS", RFC 8310,
@@ -436,6 +440,16 @@ Authors' Addresses
    Email: TirumaleswarReddy_Konda@McAfee.com
 
 
+
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    Dan Wing
    Citrix Systems, Inc.
    USA
@@ -445,4 +459,46 @@ Authors' Addresses
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 8]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 9]

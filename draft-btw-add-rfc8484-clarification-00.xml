@@ -360,6 +360,10 @@
 
       <t>Section 9 of <xref target="RFC7838"></xref> describes security
       considerations related to the use of alternate services.</t>
+
+      <t>DNS clients that ignore authentication failures and accept spoofed
+      certificates will be subject to attacks (e.g., redirect to malicious
+      servers, intercept sensitive data).</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -367,7 +371,8 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Many thanks to Christian Jacquenet for the review.</t>
+      <t>Many thanks to Christian Jacquenet and Philippe Fouquart for the
+      review.</t>
     </section>
   </middle>
 
