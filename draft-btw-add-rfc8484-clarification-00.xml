@@ -217,8 +217,8 @@
       <t>NEW<list style="empty">
           <t>A DoH client MUST NOT use a different URI that was discovered
           outside of the client's configuration when communicating with HTTP
-          servers (except via HTTP redirection discussed in Section 6.4 of
-          <xref target="RFC7231"></xref>).</t>
+          servers (except via HTTP redirection from a configured URI (Section
+          6.4 of <xref target="RFC7231"></xref>)).</t>
 
           <t>Also, a DoH client MUST ignore an unsolicited response (such as
           through HTTP/2 server push) that appears to be a valid answer to a
