@@ -119,7 +119,9 @@
       <t>This document clarifies the intent of DNS-over-HTTPS (DoH) <xref
       target="RFC8484"></xref> whether redirection is allowed or not (<xref
       target="clarification"></xref>), and subsequently specifies how
-      redirection is performed (<xref target="resolution"></xref>).</t>
+      redirection is performed (Sections <xref format="counter"
+      target="resolution"></xref> and <xref format="counter"
+      target="Server-redirect"></xref>).</t>
     </section>
 
     <section anchor="notation" title="Terminology">
@@ -128,6 +130,8 @@
       "OPTIONAL" in this document are to be interpreted as described in BCP 14
       <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
       only when, they appear in all capitals, as shown here.</t>
+
+      <t>"A/AAAA" is used to refer to "A and/or AAAA records".</t>
     </section>
 
     <section title="Discussion">
@@ -198,8 +202,7 @@
       problem.</t>
     </section>
 
-    <section anchor="clarification"
-             title="Clarification of Redirection in DoH Redirection in DoH">
+    <section anchor="clarification" title="RFC8484 Update">
       <t>OLD:<list style="empty">
           <t>A DoH client MUST NOT use a different URI simply because it was
           discovered outside of the client's configuration (such as through
@@ -235,12 +238,11 @@
       <t>There are two possible approaches to resolving the redirect domain,
       which are not mutually exclusive, but may have different implications
       for clients: <list style="symbols">
-          <t>Using server push to provide the client with the required A
-          and/or AAAA information (<xref target="serverpush"></xref>)</t>
+          <t>Using server push to provide the client with the required A/AAAA
+          information (<xref target="serverpush"></xref>)</t>
 
-          <t>Returning the required A and/or AAAA information directly in the
-          body of the redirect response (<xref
-          target="responsebody"></xref>).</t>
+          <t>Returning the required A/AAAA information directly in the body of
+          the redirect response (<xref target="responsebody"></xref>).</t>
         </list></t>
 
       <t>Servers supporting DoH redirect MUST support the server push
@@ -252,30 +254,31 @@
 
       <section anchor="serverpush" title="Server Push">
         <t>The DoH specification allows the use of server push to send DNS
-        responses. The typical use case for server push is when the server
-        knows that the client will need to make a request for a resource, and
-        so provides the answer to that request via the server push mechanism.
-        Sending answers to queries implies that the DoH server performs those
-        queries itself, or retrieves them from its cache.</t>
+        responses (Section 5.3 of <xref target="RFC8484"></xref>). The typical
+        use case for server push is when the server knows that the client will
+        need to make a request for a resource, and so provides the answer to
+        that request via the server push mechanism. Sending answers to queries
+        implies that the DoH server performs those queries itself, or
+        retrieves them from its cache.</t>
 
         <t>In this case, the DoH server knows that the DoH client will need to
         resolve the domain returned in the redirect URI. Therefore, after
         receiving the initial request which would lead to a redirect response,
         but before returning the response, the server MUST send a push promise
         frame (Section 8.2.1 of <xref target="RFC7540"></xref>) request URL to
-        retrieve the A and/or AAAA records for the domain in the redirect
-        response (for example if the domain has both A and AAAA records, two
+        retrieve the A/AAAA resource records for the domain in the redirect
+        response (for example, if the domain has both A and AAAA records, two
         push promise frames would be sent). Any intermediate CNAME records
         would result in additional push promise frames. Promise requests
         cannot contain a request body as specified in Section 8.2.1 of <xref
         target="RFC7540"></xref>, thus they MUST use the GET method specified
-        in Sections 4.1 and 6 of <xref target="RFC8484"></xref>. The A and/or
-        AAAA responses would be sent in separate streams as specified in
-        Section 8.2.2 of <xref target="RFC7540"></xref>. Finally the redirect
+        in Sections 4.1 and 6 of <xref target="RFC8484"></xref>. The A/AAAA
+        responses are then sent in separate streams as specified in Section
+        8.2.2 of <xref target="RFC7540"></xref>. Finally, the redirect
         response itself is sent.</t>
 
-        <t>An example of the use of server push for redirection is shown
-        below:</t>
+        <t>An example of the use of server push for redirection is shown in
+        <xref target="push"></xref>.</t>
 
         <t><figure align="center" anchor="push"
             title="Redirect using Server Push">
@@ -303,10 +306,7 @@
 
       <section anchor="responsebody" title="Response Body">
         <t>Returning the required DNS response information in the body of the
-        redirect request is another way to achieve the same goal. However, DoH
-        clients using HTTP stacks to perform redirection transparently may run
-        into problems, as this approach is specific to DoH and is thus not a
-        generic solution.</t>
+        redirect request is another approach to achieve the same goal. </t>
 
         <t>The approach is straightforward; the DoH server returns in the
         response body a DNS response with an application/dns-message media
@@ -329,18 +329,35 @@
 
         <t>The main disadvantage is that this approach requires new code to be
         developed in DoH clients to handle the new condition that a redirect
-        response will contain a application/dns-message media type in the
-        response body.</t>
+        response will contain a "application/dns-message" media type in the
+        response body. DoH clients using HTTP stacks to perform redirection
+        transparently may run into problems, as this approach is specific to
+        DoH and is thus not a generic solution.</t>
       </section>
     </section>
 
-    <section anchor="Server-redirect" title="DoH Server Redirect">
-      <t>TBC.</t>
+    <section anchor="Server-redirect"
+             title="Applicability to DoH Server Redirect">
+      <t>This section specifies how DoH server redirection can be safely used
+      to present a different URI to a requesting DoH client (<xref
+      target="clarification"></xref>). To that aim, the DoH server uses HTTP
+      redirection (Section 6.4 in <xref target="RFC7231"></xref>) and one of
+      the mechanisms discussed in <xref target="serverpush"></xref> to inform
+      the client about the new URI and location of the DoH server. </t>
+
+      <t>The mechanism discussed in <xref target="RFC7838"></xref> MAY be
+      implemented by a DoH server if the DoH service is authoritatively
+      available at a separate network location. This mechanism requires the
+      alternative service to present a certificate for the origin's host
+      name.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
-      <t>Security considerations are discussed in Section 9 of <xref
-      target="RFC8484"></xref>.</t>
+      <t>DoH-related security considerations are discussed in Section 9 of
+      <xref target="RFC8484"></xref>.</t>
+
+      <t>Section 9 of <xref target="RFC7838"></xref> describes security
+      considerations related to the use of alternate services.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -367,6 +384,8 @@
       <?rfc include='reference.RFC.8484'?>
 
       <?rfc include='reference.RFC.8310'?>
+
+      <?rfc include='reference.RFC.7838'?>
     </references>
 
     <references title="Informative References">

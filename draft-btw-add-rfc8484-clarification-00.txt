@@ -6,11 +6,11 @@ ADD                                                         M. Boucadair
 Internet-Draft                                                    Orange
 Updates: 8484 (if approved)                                      N. Cook
 Intended status: Standards Track                            Open-Xchange
-Expires: October 9, 2020                                        T. Reddy
+Expires: October 10, 2020                                       T. Reddy
                                                                   McAfee
                                                                  D. Wing
                                                                   Citrix
-                                                           April 7, 2020
+                                                           April 8, 2020
 
 
      Supporting Redirect Responses in DNS Queries over HTTPS (DoH)
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 9, 2020.
+   This Internet-Draft will expire on October 10, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Boucadair, et al.        Expires October 9, 2020                [Page 1]
+Boucadair, et al.       Expires October 10, 2020                [Page 1]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -67,24 +67,24 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   2
-   4.  Clarification of Redirection in DoH Redirection in DoH  . . .   4
+   4.  RFC8484 Update  . . . . . . . . . . . . . . . . . . . . . . .   4
    5.  Resolving the Redirect Domain . . . . . . . . . . . . . . . .   4
      5.1.  Server Push . . . . . . . . . . . . . . . . . . . . . . .   5
      5.2.  Response Body . . . . . . . . . . . . . . . . . . . . . .   6
-   6.  DoH Server Redirect . . . . . . . . . . . . . . . . . . . . .   6
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   6.  Applicability to DoH Server Redirect  . . . . . . . . . . . .   6
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
    9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
      10.1.  Normative References . . . . . . . . . . . . . . . . . .   7
-     10.2.  Informative References . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+     10.2.  Informative References . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
    This document clarifies the intent of DNS-over-HTTPS (DoH) [RFC8484]
    whether redirection is allowed or not (Section 4), and subsequently
-   specifies how redirection is performed (Section 5).
+   specifies how redirection is performed (Sections 5 and 6).
 
 2.  Terminology
 
@@ -93,6 +93,8 @@ Table of Contents
    "OPTIONAL" in this document are to be interpreted as described in BCP
    14 [RFC2119][RFC8174] when, and only when, they appear in all
    capitals, as shown here.
+
+   "A/AAAA" is used to refer to "A and/or AAAA records".
 
 3.  Discussion
 
@@ -104,15 +106,16 @@ Table of Contents
       responses but uses normal HTTP content negotiation mechanisms for
       selecting alternatives that endpoints may prefer in anticipation
       of serving new use cases.  In addition to this media type
-      negotiation, it aligns itself with HTTP features such as caching,
-      redirection, proxying, authentication, and compression.
 
 
 
-Boucadair, et al.        Expires October 9, 2020                [Page 2]
+Boucadair, et al.       Expires October 10, 2020                [Page 2]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+      negotiation, it aligns itself with HTTP features such as caching,
+      redirection, proxying, authentication, and compression.
 
       The integration with HTTP provides a transport suitable for both
       existing DNS clients and native web applications seeking access to
@@ -159,18 +162,19 @@ Internet-Draft               DoH Redirection                  April 2020
    Additionally, assuming that redirection is allowed, this
    specification recommends how it is achieved, specifically regarding
    inline resolution of any domain name in the redirect URI.  This is
-   required because redirection to a domain-based URI requires DNS
-   resolution of that domain name, which creates a potential
-   bootstrapping problem.
 
 
 
-Boucadair, et al.        Expires October 9, 2020                [Page 3]
+Boucadair, et al.       Expires October 10, 2020                [Page 3]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
-4.  Clarification of Redirection in DoH Redirection in DoH
+   required because redirection to a domain-based URI requires DNS
+   resolution of that domain name, which creates a potential
+   bootstrapping problem.
+
+4.  RFC8484 Update
 
    OLD:
 
@@ -207,53 +211,55 @@ Internet-Draft               DoH Redirection                  April 2020
    which are not mutually exclusive, but may have different implications
    for clients:
 
-   o  Using server push to provide the client with the required A and/or
-      AAAA information (Section 5.1)
+   o  Using server push to provide the client with the required A/AAAA
+      information (Section 5.1)
 
-   o  Returning the required A and/or AAAA information directly in the
-      body of the redirect response (Section 5.2).
+   o  Returning the required A/AAAA information directly in the body of
+      the redirect response (Section 5.2).
+
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 4]
+
+Internet-Draft               DoH Redirection                  April 2020
+
 
    Servers supporting DoH redirect MUST support the server push
    mechanism and SHOULD support returning the redirect response body
    mechanism.  The reason that the server push mechanism is mandatory is
    that it is likely to work with existing HTTP clients that support
-
-
-
-
-Boucadair, et al.        Expires October 9, 2020                [Page 4]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
    server push, whereas the latter mechanism is likely to require more
    effort to support.
 
 5.1.  Server Push
 
    The DoH specification allows the use of server push to send DNS
-   responses.  The typical use case for server push is when the server
-   knows that the client will need to make a request for a resource, and
-   so provides the answer to that request via the server push mechanism.
-   Sending answers to queries implies that the DoH server performs those
-   queries itself, or retrieves them from its cache.
+   responses (Section 5.3 of [RFC8484]).  The typical use case for
+   server push is when the server knows that the client will need to
+   make a request for a resource, and so provides the answer to that
+   request via the server push mechanism.  Sending answers to queries
+   implies that the DoH server performs those queries itself, or
+   retrieves them from its cache.
 
    In this case, the DoH server knows that the DoH client will need to
    resolve the domain returned in the redirect URI.  Therefore, after
    receiving the initial request which would lead to a redirect
    response, but before returning the response, the server MUST send a
    push promise frame (Section 8.2.1 of [RFC7540]) request URL to
-   retrieve the A and/or AAAA records for the domain in the redirect
-   response (for example if the domain has both A and AAAA records, two
+   retrieve the A/AAAA resource records for the domain in the redirect
+   response (for example, if the domain has both A and AAAA records, two
    push promise frames would be sent).  Any intermediate CNAME records
    would result in additional push promise frames.  Promise requests
    cannot contain a request body as specified in Section 8.2.1 of
    [RFC7540], thus they MUST use the GET method specified in Sections
-   4.1 and 6 of [RFC8484].  The A and/or AAAA responses would be sent in
-   separate streams as specified in Section 8.2.2 of [RFC7540].  Finally
-   the redirect response itself is sent.
+   4.1 and 6 of [RFC8484].  The A/AAAA responses are then sent in
+   separate streams as specified in Section 8.2.2 of [RFC7540].
+   Finally, the redirect response itself is sent.
 
-   An example of the use of server push for redirection is shown below:
+   An example of the use of server push for redirection is shown in
+   Figure 1.
 
           DoH Client                                               DoH Server
             |                                                        |
@@ -267,6 +273,15 @@ Internet-Draft               DoH Redirection                  April 2020
 
                    Figure 1: Redirect using Server Push
 
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 5]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    The advantage of using server push to provide the DNS resolution
    information of the redirect domain is that, assuming that the DoH
    client already supports unsolicited server push messages, then this
@@ -275,20 +290,10 @@ Internet-Draft               DoH Redirection                  April 2020
    Disadvantages include the possibility that DoH clients do not support
    server push.
 
-
-
-Boucadair, et al.        Expires October 9, 2020                [Page 5]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
 5.2.  Response Body
 
    Returning the required DNS response information in the body of the
-   redirect request is another way to achieve the same goal.  However,
-   DoH clients using HTTP stacks to perform redirection transparently
-   may run into problems, as this approach is specific to DoH and is
-   thus not a generic solution.
+   redirect request is another approach to achieve the same goal.
 
    The approach is straightforward; the DoH server returns in the
    response body a DNS response with an application/dns-message media
@@ -311,32 +316,44 @@ Internet-Draft               DoH Redirection                  April 2020
 
    The main disadvantage is that this approach requires new code to be
    developed in DoH clients to handle the new condition that a redirect
-   response will contain a application/dns-message media type in the
-   response body.
+   response will contain a "application/dns-message" media type in the
+   response body.  DoH clients using HTTP stacks to perform redirection
+   transparently may run into problems, as this approach is specific to
+   DoH and is thus not a generic solution.
 
-6.  DoH Server Redirect
+6.  Applicability to DoH Server Redirect
 
-   TBC.
+   This section specifies how DoH server redirection can be safely used
+   to present a different URI to a requesting DoH client (Section 4).
+   To that aim, the DoH server uses HTTP redirection (Section 6.4 in
+   [RFC7231]) and one of the mechanisms discussed in Section 5.1 to
+   inform the client about the new URI and location of the DoH server.
+
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 6]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
+   The mechanism discussed in [RFC7838] MAY be implemented by a DoH
+   server if the DoH service is authoritatively available at a separate
+   network location.  This mechanism requires the alternative service to
+   present a certificate for the origin's host name.
 
 7.  Security Considerations
 
-   Security considerations are discussed in Section 9 of [RFC8484].
+   DoH-related security considerations are discussed in Section 9 of
+   [RFC8484].
+
+   Section 9 of [RFC7838] describes security considerations related to
+   the use of alternate services.
 
 8.  IANA Considerations
 
    This document does not request any action from IANA.
-
-
-
-
-
-
-
-
-Boucadair, et al.        Expires October 9, 2020                [Page 6]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
 9.  Acknowledgements
 
@@ -361,9 +378,21 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC7540, May 2015,
               <https://www.rfc-editor.org/info/rfc7540>.
 
+   [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
+              Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
+              April 2016, <https://www.rfc-editor.org/info/rfc7838>.
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+
+Boucadair, et al.       Expires October 10, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
 
    [RFC8310]  Dickinson, S., Gillmor, D., and T. Reddy, "Usage Profiles
               for DNS over TLS and DNS over DTLS", RFC 8310,
@@ -382,17 +411,6 @@ Internet-Draft               DoH Redirection                  April 2020
               <https://www.rfc-editor.org/info/rfc3552>.
 
 Authors' Addresses
-
-
-
-
-
-
-
-Boucadair, et al.        Expires October 9, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    Mohamed Boucadair
    Orange
@@ -427,22 +445,4 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Boucadair, et al.        Expires October 9, 2020                [Page 8]
+Boucadair, et al.       Expires October 10, 2020                [Page 8]
