@@ -6,11 +6,11 @@ ADD                                                         M. Boucadair
 Internet-Draft                                                    Orange
 Updates: 8484 (if approved)                                      N. Cook
 Intended status: Standards Track                            Open-Xchange
-Expires: October 10, 2020                                       T. Reddy
+Expires: October 11, 2020                                       T. Reddy
                                                                   McAfee
                                                                  D. Wing
                                                                   Citrix
-                                                           April 8, 2020
+                                                           April 9, 2020
 
 
      Supporting Redirect Responses in DNS Queries over HTTPS (DoH)
@@ -18,9 +18,8 @@ Expires: October 10, 2020                                       T. Reddy
 
 Abstract
 
-   This document clarifies whether redirection is allowed, and specifies
-   how redirection is performed in the DNS-over-HTTPS (DoH)
-   specification.
+   This document clarifies whether DNS-over-HTTPS (DoH) redirection is
+   allowed and specifies how redirection is thus performed.
 
 Status of This Memo
 
@@ -37,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 10, 2020.
+   This Internet-Draft will expire on October 11, 2020.
 
 Copyright Notice
 
@@ -50,15 +49,15 @@ Copyright Notice
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 1]
+Boucadair, et al.       Expires October 11, 2020                [Page 1]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
@@ -105,17 +104,16 @@ Table of Contents
    [RFC8484] indicates that the support of HTTP redirection is one of
    DoH design goals (Section 1):
 
+      "The described approach is more than a tunnel over HTTP.  It
+      establishes default media formatting types for requests and
 
 
 
-
-Boucadair, et al.       Expires October 10, 2020                [Page 2]
+Boucadair, et al.       Expires October 11, 2020                [Page 2]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
-      "The described approach is more than a tunnel over HTTP.  It
-      establishes default media formatting types for requests and
       responses but uses normal HTTP content negotiation mechanisms for
       selecting alternatives that endpoints may prefer in anticipation
       of serving new use cases.  In addition to this media type
@@ -165,7 +163,9 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 3]
+
+
+Boucadair, et al.       Expires October 11, 2020                [Page 3]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -190,8 +190,8 @@ Internet-Draft               DoH Redirection                  April 2020
 
       A DoH client MUST NOT use a different URI that was discovered
       outside of the client's configuration when communicating with HTTP
-      servers (except via HTTP redirection discussed in Section 6.4 of
-      [RFC7231]).
+      servers except via HTTP redirection from a configured URI
+      (Section 6.4 of [RFC7231]).
 
       Also, a DoH client MUST ignore an unsolicited response (such as
       through HTTP/2 server push) that appears to be a valid answer to a
@@ -207,7 +207,7 @@ Internet-Draft               DoH Redirection                  April 2020
    returned in the redirect response unless the DoH server provides the
    resolution information for that domain as part of the response.  Even
    if a DoH client has a plaintext DNS resolver configured, using that
-   resolver is considered as a privacy leakage [RFC8310].
+   resolver is considered as a minimal privacy leakage [RFC8310].
 
    There are two possible approaches to resolving the redirect domain,
    which are not mutually exclusive, but may have different implications
@@ -221,7 +221,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 4]
+Boucadair, et al.       Expires October 11, 2020                [Page 4]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -277,7 +277,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 5]
+Boucadair, et al.       Expires October 11, 2020                [Page 5]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -333,13 +333,18 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 6]
+Boucadair, et al.       Expires October 11, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
    network location.  This mechanism requires the alternative service to
    present a certificate for the origin's host name.
+
+   If the client does not support both server push (or disables server
+   push) and the response body with A/AAAA addresses (Section 5.1), it
+   will have to resolve the domain name in the redirected URI using
+   Do53.
 
 7.  Security Considerations
 
@@ -381,18 +386,17 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC7540, May 2015,
               <https://www.rfc-editor.org/info/rfc7540>.
 
-   [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
-              Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
-              April 2016, <https://www.rfc-editor.org/info/rfc7838>.
 
 
 
-
-
-Boucadair, et al.       Expires October 10, 2020                [Page 7]
+Boucadair, et al.       Expires October 11, 2020                [Page 7]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+   [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
+              Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
+              April 2016, <https://www.rfc-editor.org/info/rfc7838>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -441,11 +445,7 @@ Authors' Addresses
 
 
 
-
-
-
-
-Boucadair, et al.       Expires October 10, 2020                [Page 8]
+Boucadair, et al.       Expires October 11, 2020                [Page 8]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -501,4 +501,4 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 10, 2020                [Page 9]
+Boucadair, et al.       Expires October 11, 2020                [Page 9]

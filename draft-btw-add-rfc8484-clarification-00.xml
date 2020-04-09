@@ -108,9 +108,8 @@
     <workgroup>ADD</workgroup>
 
     <abstract>
-      <t>This document clarifies whether redirection is allowed, and specifies
-      how redirection is performed in the DNS-over-HTTPS (DoH)
-      specification.</t>
+      <t>This document clarifies whether DNS-over-HTTPS (DoH) redirection is
+      allowed and specifies how redirection is thus performed.</t>
     </abstract>
   </front>
 
@@ -217,8 +216,8 @@
       <t>NEW<list style="empty">
           <t>A DoH client MUST NOT use a different URI that was discovered
           outside of the client's configuration when communicating with HTTP
-          servers (except via HTTP redirection from a configured URI (Section
-          6.4 of <xref target="RFC7231"></xref>)).</t>
+          servers except via HTTP redirection from a configured URI (Section
+          6.4 of <xref target="RFC7231"></xref>).</t>
 
           <t>Also, a DoH client MUST ignore an unsolicited response (such as
           through HTTP/2 server push) that appears to be a valid answer to a
@@ -235,7 +234,7 @@
       returned in the redirect response unless the DoH server provides the
       resolution information for that domain as part of the response. Even if
       a DoH client has a plaintext DNS resolver configured, using that
-      resolver is considered as a privacy leakage <xref
+      resolver is considered as a minimal privacy leakage <xref
       target="RFC8310"></xref>.</t>
 
       <t>There are two possible approaches to resolving the redirect domain,
@@ -352,6 +351,11 @@
       available at a separate network location. This mechanism requires the
       alternative service to present a certificate for the origin's host
       name.</t>
+
+      <t>If the client does not support both server push (or disables server
+      push) and the response body with A/AAAA addresses (<xref
+      target="responsebody"></xref>), it will have to resolve the domain name
+      in the redirected URI using Do53.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
