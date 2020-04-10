@@ -6,11 +6,11 @@ ADD                                                         M. Boucadair
 Internet-Draft                                                    Orange
 Updates: 8484 (if approved)                                      N. Cook
 Intended status: Standards Track                            Open-Xchange
-Expires: October 11, 2020                                       T. Reddy
+Expires: October 12, 2020                                       T. Reddy
                                                                   McAfee
                                                                  D. Wing
                                                                   Citrix
-                                                           April 9, 2020
+                                                          April 10, 2020
 
 
      Supporting Redirect Responses in DNS Queries over HTTPS (DoH)
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 11, 2020.
+   This Internet-Draft will expire on October 12, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Boucadair, et al.       Expires October 11, 2020                [Page 1]
+Boucadair, et al.       Expires October 12, 2020                [Page 1]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -82,7 +82,7 @@ Table of Contents
 1.  Introduction
 
    This document clarifies the intent of DNS-over-HTTPS (DoH) [RFC8484]
-   whether redirection is allowed or not (Section 4), and subsequently
+   whether redirection is allowed (Section 4), and subsequently
    specifies how redirection is performed (Sections 5 and 6).
 
    This document adheres to Section 4.3 of [I-D.ietf-httpbis-bcp56bis]
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Boucadair, et al.       Expires October 11, 2020                [Page 2]
+Boucadair, et al.       Expires October 12, 2020                [Page 2]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -165,7 +165,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 11, 2020                [Page 3]
+Boucadair, et al.       Expires October 12, 2020                [Page 3]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -175,7 +175,9 @@ Internet-Draft               DoH Redirection                  April 2020
    inline resolution of any domain name in the redirect URI.  This is
    required because redirection to a domain-based URI requires DNS
    resolution of that domain name, which creates a potential
-   bootstrapping problem.
+   bootstrapping problem (e.g., If DoH server is the only configured DNS
+   server, redirecting the client to a new server by presenting a name
+   will fail).
 
 4.  RFC8484 Update
 
@@ -202,12 +204,13 @@ Internet-Draft               DoH Redirection                  April 2020
 
    Redirection in DoH is slightly different from "regular" HTTP
    redirection, in that the DoH server may be the only configured DNS
-   resolver for the client.  In that case, and assuming the redirect URI
-   uses a domain name, the client will be unable to contact the URI
-   returned in the redirect response unless the DoH server provides the
-   resolution information for that domain as part of the response.  Even
-   if a DoH client has a plaintext DNS resolver configured, using that
-   resolver is considered as a minimal privacy leakage [RFC8310].
+   resolver for the client (e.g., as per Section 7.1 of [RFC8310]).  In
+   that case, and assuming the redirect URI uses a domain name, the
+   client will be unable to contact the URI returned in the redirect
+   response unless the DoH server provides the resolution information
+   for that domain as part of the response.  Even if a DoH client has a
+   plaintext DNS resolver configured, using that resolver is considered
+   as a minimal privacy leakage [RFC8310].
 
    There are two possible approaches to resolving the redirect domain,
    which are not mutually exclusive, but may have different implications
@@ -216,15 +219,15 @@ Internet-Draft               DoH Redirection                  April 2020
    o  Returning the required A/AAAA information directly in the body of
       the redirect response (Section 5.1).
 
-   o  Using server push to provide the client with the required A/AAAA
-      information (Section 5.2).
 
 
-
-Boucadair, et al.       Expires October 11, 2020                [Page 4]
+Boucadair, et al.       Expires October 12, 2020                [Page 4]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+   o  Using server push to provide the client with the required A/AAAA
+      information (Section 5.2).
 
    Servers supporting DoH redirect MUST support returning the redirect
    response body mechanism and MAY support the server push mechanism.
@@ -272,16 +275,15 @@ Internet-Draft               DoH Redirection                  April 2020
    implies that the DoH server performs those queries itself, or
    retrieves them from its cache.
 
-   In this case, the DoH server knows that the DoH client will need to
-   resolve the domain returned in the redirect URI.  Therefore, after
 
 
-
-Boucadair, et al.       Expires October 11, 2020                [Page 5]
+Boucadair, et al.       Expires October 12, 2020                [Page 5]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
+   In this case, the DoH server knows that the DoH client will need to
+   resolve the domain returned in the redirect URI.  Therefore, after
    receiving the initial request which would lead to a redirect
    response, but before returning the response, the server MUST send a
    push promise frame (Section 8.2.1 of [RFC7540]) request URL to
@@ -327,22 +329,22 @@ Internet-Draft               DoH Redirection                  April 2020
    [RFC7231]) and one of the mechanisms discussed in Section 5 to inform
    the client about the new URI and location of the DoH server.
 
-   The mechanism discussed in [RFC7838] MAY be implemented by a DoH
-   server if the DoH service is authoritatively available at a separate
 
 
 
 
-Boucadair, et al.       Expires October 11, 2020                [Page 6]
+Boucadair, et al.       Expires October 12, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
+   The mechanism discussed in [RFC7838] MAY be implemented by a DoH
+   server if the DoH service is authoritatively available at a separate
    network location.  This mechanism requires the alternative service to
    present a certificate for the origin's host name.
 
    If the client does not support both server push (or disables server
-   push) and the response body with A/AAAA addresses (Section 5.1), it
+   push) and the response body with A/AAAA information (Section 5.1), it
    will have to resolve the domain name in the redirected URI using
    Do53.
 
@@ -381,18 +383,21 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC7231, June 2014,
               <https://www.rfc-editor.org/info/rfc7231>.
 
+
+
+
+
+
+
+Boucadair, et al.       Expires October 12, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    [RFC7540]  Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
               DOI 10.17487/RFC7540, May 2015,
               <https://www.rfc-editor.org/info/rfc7540>.
-
-
-
-
-Boucadair, et al.       Expires October 11, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
               Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
@@ -435,6 +440,16 @@ Authors' Addresses
    Email: neil.cook@noware.co.uk
 
 
+
+
+
+
+
+Boucadair, et al.       Expires October 12, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    Tirumaleswar Reddy
    McAfee, Inc.
    Embassy Golf Link Business Park
@@ -442,12 +457,6 @@ Authors' Addresses
    India
 
    Email: TirumaleswarReddy_Konda@McAfee.com
-
-
-
-Boucadair, et al.       Expires October 11, 2020                [Page 8]
-
-Internet-Draft               DoH Redirection                  April 2020
 
 
    Dan Wing
@@ -492,13 +501,4 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-
-
-
-
-
-
-
-
-
-Boucadair, et al.       Expires October 11, 2020                [Page 9]
+Boucadair, et al.       Expires October 12, 2020                [Page 9]

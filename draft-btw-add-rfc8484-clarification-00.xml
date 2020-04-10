@@ -116,7 +116,7 @@
   <middle>
     <section anchor="intro" title="Introduction">
       <t>This document clarifies the intent of DNS-over-HTTPS (DoH) <xref
-      target="RFC8484"></xref> whether redirection is allowed or not (<xref
+      target="RFC8484"></xref> whether redirection is allowed (<xref
       target="clarification"></xref>), and subsequently specifies how
       redirection is performed (Sections <xref format="counter"
       target="resolution"></xref> and <xref format="counter"
@@ -202,7 +202,9 @@
       inline resolution of any domain name in the redirect URI. This is
       required because redirection to a domain-based URI requires DNS
       resolution of that domain name, which creates a potential bootstrapping
-      problem.</t>
+      problem (e.g., If DoH server is the only configured DNS server,
+      redirecting the client to a new server by presenting a name will
+      fail).</t>
     </section>
 
     <section anchor="clarification" title="RFC8484 Update">
@@ -229,7 +231,8 @@
     <section anchor="resolution" title="Resolving the Redirect Domain">
       <t>Redirection in DoH is slightly different from "regular" HTTP
       redirection, in that the DoH server may be the only configured DNS
-      resolver for the client. In that case, and assuming the redirect URI
+      resolver for the client (e.g., as per Section 7.1 of <xref
+      target="RFC8310"></xref>). In that case, and assuming the redirect URI
       uses a domain name, the client will be unable to contact the URI
       returned in the redirect response unless the DoH server provides the
       resolution information for that domain as part of the response. Even if
@@ -353,7 +356,7 @@
       name.</t>
 
       <t>If the client does not support both server push (or disables server
-      push) and the response body with A/AAAA addresses (<xref
+      push) and the response body with A/AAAA information (<xref
       target="responsebody"></xref>), it will have to resolve the domain name
       in the redirected URI using Do53.</t>
     </section>
