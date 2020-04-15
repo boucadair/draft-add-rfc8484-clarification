@@ -6,11 +6,11 @@ ADD                                                         M. Boucadair
 Internet-Draft                                                    Orange
 Updates: 8484 (if approved)                                      N. Cook
 Intended status: Standards Track                            Open-Xchange
-Expires: October 16, 2020                                       T. Reddy
+Expires: October 17, 2020                                       T. Reddy
                                                                   McAfee
                                                                  D. Wing
                                                                   Citrix
-                                                          April 14, 2020
+                                                          April 15, 2020
 
 
      Supporting Redirect Responses in DNS Queries over HTTPS (DoH)
@@ -36,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on October 16, 2020.
+   This Internet-Draft will expire on October 17, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 1]
+Boucadair, et al.       Expires October 17, 2020                [Page 1]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 2]
+Boucadair, et al.       Expires October 17, 2020                [Page 2]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -165,7 +165,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 3]
+Boucadair, et al.       Expires October 17, 2020                [Page 3]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -221,13 +221,12 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 4]
+Boucadair, et al.       Expires October 17, 2020                [Page 4]
 
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   Concretely, the DoH server uses HTTP redirection (Section 6.4.7 of
-   [RFC7231] or [RFC7538]) and returns in the response body a DNS
+   Concretely, the DoH server returns in the response body a DNS
    response with an 'application/dns-message' media type as specified in
    Section 6 of [RFC8484], containing any A and AAAA records for the
    domain name in the redirect URI, including any CNAMEs.
@@ -277,7 +276,8 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 5]
+
+Boucadair, et al.       Expires October 17, 2020                [Page 5]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -333,7 +333,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 6]
+Boucadair, et al.       Expires October 17, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -389,7 +389,7 @@ Appendix A.  Server Push
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 7]
+Boucadair, et al.       Expires October 17, 2020                [Page 7]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -445,7 +445,7 @@ Authors' Addresses
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 8]
+Boucadair, et al.       Expires October 17, 2020                [Page 8]
 
 Internet-Draft               DoH Redirection                  April 2020
 
@@ -501,4 +501,4 @@ Internet-Draft               DoH Redirection                  April 2020
 
 
 
-Boucadair, et al.       Expires October 16, 2020                [Page 9]
+Boucadair, et al.       Expires October 17, 2020                [Page 9]

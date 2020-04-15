@@ -246,12 +246,11 @@
           (network.trr.mode=3).</t>
         </list></t>
 
-      <t>Concretely, the DoH server uses HTTP redirection (Section 6.4.7 of
-      <xref target="RFC7231"></xref> or <xref target="RFC7538"></xref>) and
-      returns in the response body a DNS response with an
-      'application/dns-message' media type as specified in Section 6 of <xref
-      target="RFC8484"></xref>, containing any A and AAAA records for the
-      domain name in the redirect URI, including any CNAMEs.</t>
+      <t>Concretely, the DoH server returns in the response body a DNS
+      response with an 'application/dns-message' media type as specified in
+      Section 6 of <xref target="RFC8484"></xref>, containing any A and AAAA
+      records for the domain name in the redirect URI, including any
+      CNAMEs.</t>
 
       <t>For example, if the redirect URI contains the domain name
       "redirect.example.com", and "redirect.example.com" is a CNAME pointing
