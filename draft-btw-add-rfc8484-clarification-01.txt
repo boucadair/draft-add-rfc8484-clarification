@@ -75,8 +75,8 @@ Table of Contents
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
      10.1.  Normative References . . . . . . . . . . . . . . . . . .   6
      10.2.  Informative References . . . . . . . . . . . . . . . . .   7
-   Appendix A.  Server Push  . . . . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   Appendix A.  Server Push  . . . . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -255,9 +255,9 @@ Internet-Draft               DoH Redirection                  April 2020
 
    This section specifies how DoH server redirection can be safely used
    to present a different URI to a requesting DoH client (Section 4).
-   To that aim, the DoH server uses the mechanisms discussed in
-   Section 5 to inform the client about the new URI and location of the
-   DoH server.
+   To that aim, the DoH server uses HTTP redirection (Section 6.4 in
+   [RFC7231] or [RFC7538]) and the mechanism discussed in Section 5 to
+   inform the client about the new URI and location of the DoH server.
 
    The mechanism discussed in [RFC7838] MAY be implemented by a DoH
    server if the DoH service is authoritatively available at a separate
@@ -270,10 +270,10 @@ Internet-Draft               DoH Redirection                  April 2020
    information (Section 5), it will have to resolve the domain name in
    the redirected URI using Do53.
 
+      Discussion Notes:
 
-
-
-
+      1.  Every GET request with a new query name will require
+          redirection, which is suboptimal.
 
 
 
@@ -281,6 +281,21 @@ Boucadair, et al.       Expires October 17, 2020                [Page 5]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+      2.  Using POST would solve the issue, nevertheless POST responses
+          are not widely cached as per Section 4.2.3 of [RFC7231].
+
+      3.  Should we mention that "DoH clients supporting redirection
+          SHOULD cache 301/308 redirect responses, obeying any Cache-
+          Control headers if present"?
+
+      4.  What about relaxing [RFC7838] so that the alternate service
+          present a certificate of a sub-domain of the Origin?
+
+      5.  At bootstrap, the DoH client sends a GET against a well-known
+          URI to retrieve the list of supported URI templates.  The
+          server can redirect the client to an alternate server .This
+          approach does not bloat the cache.
 
 7.  Security Considerations
 
@@ -312,6 +327,17 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
+
+
+
+
+
+
+Boucadair, et al.       Expires October 17, 2020                [Page 6]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
               DOI 10.17487/RFC7231, June 2014,
@@ -329,14 +355,6 @@ Internet-Draft               DoH Redirection                  April 2020
    [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
               Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
               April 2016, <https://www.rfc-editor.org/info/rfc7838>.
-
-
-
-
-Boucadair, et al.       Expires October 17, 2020                [Page 6]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -364,6 +382,18 @@ Internet-Draft               DoH Redirection                  April 2020
               ietf-httpbis-bcp56bis-09 (work in progress), November
               2019.
 
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 17, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
 Appendix A.  Server Push
 
    The DoH specification allows the use of server push to send DNS
@@ -386,14 +416,6 @@ Appendix A.  Server Push
    contain a request body as specified in Section 8.2.1 of [RFC7540],
    thus they use the GET method specified in Sections 4.1 and 6 of
    [RFC8484].  The A/AAAA responses are then sent in separate streams as
-
-
-
-Boucadair, et al.       Expires October 17, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
    specified in Section 8.2.2 of [RFC7540].  Finally, the redirect
    response itself is sent.
 
@@ -421,6 +443,13 @@ Internet-Draft               DoH Redirection                  April 2020
    Disadvantages include the possibility that DoH clients do not support
    server push.
 
+
+
+Boucadair, et al.       Expires October 17, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
 Authors' Addresses
 
    Mohamed Boucadair
@@ -438,18 +467,6 @@ Authors' Addresses
    Email: neil.cook@noware.co.uk
 
 
-
-
-
-
-
-
-
-Boucadair, et al.       Expires October 17, 2020                [Page 8]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
    Tirumaleswar Reddy
    McAfee, Inc.
    Embassy Golf Link Business Park
@@ -464,23 +481,6 @@ Internet-Draft               DoH Redirection                  April 2020
    USA
 
    Email: dwing-ietf@fuggles.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -278,9 +278,11 @@
              title="Applicability to DoH Server Redirect">
       <t>This section specifies how DoH server redirection can be safely used
       to present a different URI to a requesting DoH client (<xref
-      target="clarification"></xref>). To that aim, the DoH server uses the
-      mechanisms discussed in <xref target="resolution"></xref> to inform the
-      client about the new URI and location of the DoH server.</t>
+      target="clarification"></xref>). To that aim, the DoH server uses HTTP
+      redirection (Section 6.4 in <xref target="RFC7231"></xref> or <xref
+      target="RFC7538"></xref>) and the mechanism discussed in <xref
+      target="resolution"></xref> to inform the client about the new URI and
+      location of the DoH server.</t>
 
       <t>The mechanism discussed in <xref target="RFC7838"></xref> MAY be
       implemented by a DoH server if the DoH service is authoritatively
@@ -293,6 +295,30 @@
       <t>If the client does not support the response body with A/AAAA
       information (<xref target="resolution"></xref>), it will have to resolve
       the domain name in the redirected URI using Do53.</t>
+
+      <t><list style="empty">
+          <t>Discussion Notes:<list style="numbers">
+              <t>Every GET request with a new query name will require
+              redirection, which is suboptimal.</t>
+
+              <t>Using POST would solve the issue, nevertheless POST responses
+              are not widely cached as per Section 4.2.3 of <xref
+              target="RFC7231"></xref>. </t>
+
+              <t>Should we mention that "DoH clients supporting redirection
+              SHOULD cache 301/308 redirect responses, obeying any
+              Cache-Control headers if present"?</t>
+
+              <t>What about relaxing <xref target="RFC7838"></xref> so that
+              the alternate service present a certificate of a sub-domain of
+              the Origin?</t>
+
+              <t>At bootstrap, the DoH client sends a GET against a well-known
+              URI to retrieve the list of supported URI templates. The server
+              can redirect the client to an alternate server .This approach
+              does not bloat the cache. </t>
+            </list></t>
+        </list></t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
