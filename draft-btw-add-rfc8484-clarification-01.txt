@@ -306,7 +306,7 @@ Internet-Draft               DoH Redirection                  April 2020
                     "192.0.2.2"
                   ],
                   "aaaa": [
-                    "2001:d8::1",
+                    "2001:db8::1",
                     "2001:db8::2"
                   ],
                   "ttl": 3600
