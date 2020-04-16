@@ -298,30 +298,31 @@
           <t>Every GET request with a new query name will require redirection,
           which is suboptimal. Indeed, a redirect will only affect a request
           and the DoH client will need to contact the base server for every
-          request and get redirected to the redirect server. Also, permanent
-          redirects for all these queries would also bloat the client's HTTP
-          cache.</t>
+          request and get redirected. Also, permanent redirects for all these
+          queries would also bloat the client's HTTP cache.</t>
 
-          <t>Using POST would solve the issue, nevertheless POST responses are
+          <t>Using POST would solve the issue. Nevertheless POST responses are
           not widely cached as per Section 4.2.3 of <xref
           target="RFC7231"></xref>. </t>
 
           <t>A solution that provides the same benefits as POST but without
-          the caching issues is needed. Such solution must then rely on GET. A
-          candidate solution using GET is described hereafter. </t>
+          the caching issues is needed. Such solution must then rely upon HTTP
+          GET method. A candidate solution using GET is described hereafter.
+          </t>
 
-          <t>At bootstrap, the DoH client sends a GET against a well-known URI
-          (can also be used to retrieve the URI Templates <xref
+          <t>At bootstrap, the DoH client sends a GET request against a
+          well-known URI (can also be used to retrieve the URI Templates <xref
           target="I-D.ietf-dnsop-resolver-information"></xref>). The server
           can redirect the client to an alternate server. The server's
           response will include: the Authentication Domain Name (ADN) of the
           redirect server, a list of IP addresses to locate the redirect
           server, a list of URI Templates (e.g.,
-          https://cpe123.example.net/dns-query{?dns}), CNAME, etc. An example
-          is depicted in <xref target="ex"></xref>. The structure of the
-          response is inspired from the one in Section 4.4.2 of <xref
-          target="RFC7975"></xref>.<figure align="center" anchor="ex"
-              title="Response Example">
+          https://cpe123.example.net/dns-query{?dns}), CNAME, etc. Subsequent
+          queries will be sent to the redirected server.<vspace
+          blankLines="1" />An example of such response is depicted in <xref
+          target="ex"></xref>. The structure of the response is inspired by
+          Section 4.4.2 of <xref target="RFC7975"></xref>.<figure
+              align="center" anchor="ex" title="Response Example">
               <preamble></preamble>
 
               <artwork align="center"><![CDATA[{
@@ -348,10 +349,8 @@
 ]]></artwork>
 
               <postamble></postamble>
-            </figure><vspace blankLines="1" />Subsequent queries will be sent
-          to the redirected server.<vspace blankLines="1" />Unlike the GET
-          discussed in the first bullet, this approach does not bloat the
-          cache. </t>
+            </figure><vspace blankLines="1" />Unlike the GET discussed in the
+          first bullet, this approach does not bloat the cache. </t>
 
           <t>What about relaxing <xref target="RFC7838"></xref> so that the
           alternate service presents a certificate of a sub-domain of the

@@ -270,9 +270,9 @@ Internet-Draft               DoH Redirection                  April 2020
    1.  Every GET request with a new query name will require redirection,
        which is suboptimal.  Indeed, a redirect will only affect a
        request and the DoH client will need to contact the base server
-       for every request and get redirected to the redirect server.
-       Also, permanent redirects for all these queries would also bloat
-       the client's HTTP cache.
+       for every request and get redirected.  Also, permanent redirects
+       for all these queries would also bloat the client's HTTP cache.
+
 
 
 
@@ -282,23 +282,27 @@ Boucadair, et al.       Expires October 18, 2020                [Page 5]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-   2.  Using POST would solve the issue, nevertheless POST responses are
-       not widely cached as per Section 4.2.3 of [RFC7231].
+   2.  Using POST would solve the issue.  Nevertheless POST responses
+       are not widely cached as per Section 4.2.3 of [RFC7231].
 
    3.  A solution that provides the same benefits as POST but without
-       the caching issues is needed.  Such solution must then rely on
-       GET.  A candidate solution using GET is described hereafter.
+       the caching issues is needed.  Such solution must then rely upon
+       HTTP GET method.  A candidate solution using GET is described
+       hereafter.
 
-   4.  At bootstrap, the DoH client sends a GET against a well-known URI
-       (can also be used to retrieve the URI Templates
+   4.  At bootstrap, the DoH client sends a GET request against a well-
+       known URI (can also be used to retrieve the URI Templates
        [I-D.ietf-dnsop-resolver-information]).  The server can redirect
        the client to an alternate server.  The server's response will
        include: the Authentication Domain Name (ADN) of the redirect
        server, a list of IP addresses to locate the redirect server, a
        list of URI Templates (e.g., https://cpe123.example.net/dns-
-       query{?dns}), CNAME, etc.  An example is depicted in Figure 1.
-       The structure of the response is inspired from the one in
-       Section 4.4.2 of [RFC7975].
+       query{?dns}), CNAME, etc.  Subsequent queries will be sent to the
+       redirected server.
+
+       An example of such response is depicted in Figure 1.  The
+       structure of the response is inspired by Section 4.4.2 of
+       [RFC7975].
 
           {
             "associated-resolvers": {
@@ -324,12 +328,8 @@ Internet-Draft               DoH Redirection                  April 2020
 
                         Figure 1: Response Example
 
-       Subsequent queries will be sent to the redirected server.
-
        Unlike the GET discussed in the first bullet, this approach does
        not bloat the cache.
-
-
 
 
 
