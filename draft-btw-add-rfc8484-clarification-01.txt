@@ -75,8 +75,8 @@ Table of Contents
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
      10.1.  Normative References . . . . . . . . . . . . . . . . . .   6
      10.2.  Informative References . . . . . . . . . . . . . . . . .   7
-   Appendix A.  Server Push  . . . . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   Appendix A.  Server Push  . . . . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -287,10 +287,16 @@ Internet-Draft               DoH Redirection                  April 2020
           need to solve this with GETs.
 
       3.  At bootstrap, the DoH client sends a GET against a well-known
-          URI (can also be used to retrieve the URI templates).  The
-          server can redirect the client to an alternate server.  This
-          approach does not bloat the cache.  Subsequent queries will be
-          sent to the redirected server.
+          URI (can also be used to retrieve the URI Templates).  The
+          server can redirect the client to an alternate server.  The
+          server's response will include: the Authentication Domain Name
+          (ADN) of the redirect server, a list of IP addresses to locate
+          the redirect server, and a list of URI Templates (e.g.,
+          https://cpe123.example.net/dns-query{?dns}).  The redirection
+          will be policy-based.
+
+          This approach does not bloat the cache.  Subsequent queries
+          will be sent to the redirected server.
 
       4.  What about relaxing [RFC7838] so that the alternate service
           presents a certificate of a sub-domain of the Origin?
@@ -325,18 +331,17 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
-              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
-              DOI 10.17487/RFC7231, June 2014,
-              <https://www.rfc-editor.org/info/rfc7231>.
-
-
 
 
 Boucadair, et al.       Expires October 18, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
+              DOI 10.17487/RFC7231, June 2014,
+              <https://www.rfc-editor.org/info/rfc7231>.
 
    [RFC7538]  Reschke, J., "The Hypertext Transfer Protocol Status Code
               308 (Permanent Redirect)", RFC 7538, DOI 10.17487/RFC7538,
@@ -377,6 +382,18 @@ Internet-Draft               DoH Redirection                  April 2020
               ietf-httpbis-bcp56bis-09 (work in progress), November
               2019.
 
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
 Appendix A.  Server Push
 
    The DoH specification allows the use of server push to send DNS
@@ -386,13 +403,6 @@ Appendix A.  Server Push
    request via the server push mechanism.  Sending answers to queries
    implies that the DoH server performs those queries itself, or
    retrieves them from its cache.
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    In this case, the DoH server knows that the DoH client will need to
    resolve the domain returned in the redirect URI.  Therefore, after
@@ -433,6 +443,13 @@ Internet-Draft               DoH Redirection                  April 2020
    Disadvantages include the possibility that DoH clients do not support
    server push.
 
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
 Authors' Addresses
 
    Mohamed Boucadair
@@ -441,13 +458,6 @@ Authors' Addresses
    France
 
    Email: mohamed.boucadair@orange.com
-
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 8]
-
-Internet-Draft               DoH Redirection                  April 2020
 
 
    Neil Cook
@@ -471,16 +481,6 @@ Internet-Draft               DoH Redirection                  April 2020
    USA
 
    Email: dwing-ietf@fuggles.com
-
-
-
-
-
-
-
-
-
-
 
 
 
