@@ -307,10 +307,10 @@
               target="RFC7231"></xref>. We need to solve this with GETs.</t>
 
               <t>At bootstrap, the DoH client sends a GET against a well-known
-              URI, e.g., to retrieve the list of supported URI templates. The
-              server can redirect the client to an alternate server. This
-              approach does not bloat the cache. Subsequent queries will be
-              sent to the redirected server. </t>
+              URI (can also be used to retrieve the URI templates). The server
+              can redirect the client to an alternate server. This approach
+              does not bloat the cache. Subsequent queries will be sent to the
+              redirected server. </t>
 
               <t>What about relaxing <xref target="RFC7838"></xref> so that
               the alternate service presents a certificate of a sub-domain of

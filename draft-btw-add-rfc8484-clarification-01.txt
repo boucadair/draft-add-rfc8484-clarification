@@ -287,10 +287,10 @@ Internet-Draft               DoH Redirection                  April 2020
           need to solve this with GETs.
 
       3.  At bootstrap, the DoH client sends a GET against a well-known
-          URI, e.g., to retrieve the list of supported URI templates.
-          The server can redirect the client to an alternate server.
-          This approach does not bloat the cache.  Subsequent queries
-          will be sent to the redirected server.
+          URI (can also be used to retrieve the URI templates).  The
+          server can redirect the client to an alternate server.  This
+          approach does not bloat the cache.  Subsequent queries will be
+          sent to the redirected server.
 
       4.  What about relaxing [RFC7838] so that the alternate service
           presents a certificate of a sub-domain of the Origin?
