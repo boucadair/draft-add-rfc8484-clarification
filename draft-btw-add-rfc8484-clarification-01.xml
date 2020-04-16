@@ -241,8 +241,9 @@
       <t>Servers supporting DoH redirect MUST support returning the redirect
       response body mechanism described hereafter.<list style="empty">
           <t>Note: "MUST" is used here because resolving the redirect name
-          using Do53 will fail in some configurations, e.g.,
-          https://wiki.mozilla.org/Trusted_Recursive_Resolver
+          using Do53 (especially for the redirection discussion in <xref
+          target="Server-redirect"></xref>) will fail in some configurations,
+          e.g., https://wiki.mozilla.org/Trusted_Recursive_Resolver
           (network.trr.mode=3).</t>
         </list></t>
 
@@ -303,20 +304,17 @@
 
               <t>Using POST would solve the issue, nevertheless POST responses
               are not widely cached as per Section 4.2.3 of <xref
-              target="RFC7231"></xref>. </t>
-
-              <t>Should we mention that "DoH clients supporting redirection
-              SHOULD cache 301/308 redirect responses, obeying any
-              Cache-Control headers if present"?</t>
-
-              <t>What about relaxing <xref target="RFC7838"></xref> so that
-              the alternate service present a certificate of a sub-domain of
-              the Origin?</t>
+              target="RFC7231"></xref>. We need to solve this with GETs.</t>
 
               <t>At bootstrap, the DoH client sends a GET against a well-known
-              URI to retrieve the list of supported URI templates. The server
-              can redirect the client to an alternate server .This approach
-              does not bloat the cache. </t>
+              URI, e.g., to retrieve the list of supported URI templates. The
+              server can redirect the client to an alternate server. This
+              approach does not bloat the cache. Subsequent queries will be
+              sent to the redirected server. </t>
+
+              <t>What about relaxing <xref target="RFC7838"></xref> so that
+              the alternate service presents a certificate of a sub-domain of
+              the Origin?</t>
             </list></t>
         </list></t>
     </section>
@@ -338,8 +336,8 @@
     </section>
 
     <section title="Acknowledgements">
-      <t>Many thanks to Christian Jacquenet and Philippe Fouquart for the
-      review.</t>
+      <t>Many thanks to Christian Jacquenet, Philippe Fouquart, and Ben
+      Schwartz for the comments.</t>
     </section>
   </middle>
 
