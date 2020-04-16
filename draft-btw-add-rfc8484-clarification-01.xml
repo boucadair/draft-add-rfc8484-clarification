@@ -312,11 +312,11 @@
               https://cpe123.example.net/dns-query{?dns}). An example is
               depicted in <xref target="ex"></xref>. The structure of the
               response is inspired from the one in Section 4.4.2 of <xref
-              target="RFC7975"></xref>.<figure anchor="ex"
+              target="RFC7975"></xref>.<figure align="center" anchor="ex"
                   title="Response Example">
                   <preamble></preamble>
 
-                  <artwork><![CDATA[{
+                  <artwork align="center"><![CDATA[{
   "associated-resolvers": {
     "adn": [
       {
@@ -326,8 +326,7 @@
         ],
         "a": [
           "192.0.2.1",
-          "192.0.2.2",
-          "192.0.2.3"
+          "192.0.2.2"
         ],
         "aaaa": [
           "2001:d8::1",
