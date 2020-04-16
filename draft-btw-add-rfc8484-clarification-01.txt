@@ -297,7 +297,7 @@ Internet-Draft               DoH Redirection                  April 2020
             "associated-resolvers": {
               "adn": [
                 {
-                  "name": "cpe1.example.com",
+                  "name": "cpe123.example.com",
                   "uri-template": [
                     "https://cpe123.example.net/dns-query{?dns}"
                   ],
@@ -309,7 +309,7 @@ Internet-Draft               DoH Redirection                  April 2020
                     "2001:d8::1",
                     "2001:db8::2"
                   ],
-                  "ttl": 60
+                  "ttl": 3600
                 }
               ]
             }
