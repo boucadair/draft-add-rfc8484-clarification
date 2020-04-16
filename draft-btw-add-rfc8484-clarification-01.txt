@@ -297,7 +297,7 @@ Internet-Draft               DoH Redirection                  April 2020
             "associated-resolvers": {
               "adn": [
                 {
-                  "name": "cpe123.example.com",
+                  "name": "cpe123.example.net",
                   "uri-template": [
                     "https://cpe123.example.net/dns-query{?dns}"
                   ],
