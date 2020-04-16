@@ -69,7 +69,7 @@ Table of Contents
    4.  RFC8484 Update  . . . . . . . . . . . . . . . . . . . . . . .   4
    5.  Resolving the Redirect Domain . . . . . . . . . . . . . . . .   4
    6.  Applicability to DoH Server Redirect  . . . . . . . . . . . .   5
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
    9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
@@ -255,7 +255,7 @@ Internet-Draft               DoH Redirection                  April 2020
 
    This section specifies how DoH server redirection can be safely used
    to present a different URI to a requesting DoH client (Section 4).
-   To that aim, the DoH server uses HTTP redirection (Section 6.4 in
+   To that aim, the DoH server may use HTTP redirection (Section 6.4 in
    [RFC7231] or [RFC7538]) and the mechanism discussed in Section 5 to
    inform the client about the new URI and location of the DoH server.
 
@@ -264,16 +264,16 @@ Internet-Draft               DoH Redirection                  April 2020
    network location.  This mechanism requires the alternative service to
    present a certificate for the origin's host name.  Nevertheless,
    [RFC7838] is not an option for some redirection scenarios (e.g.,
-   [I-D.btw-add-home]).
+   Section 7 of [I-D.btw-add-home]).  Additional complications arise to
+   provide redirection for the latter scenarios:
 
-      Discussion Notes:
+   1.  Every GET request with a new query name will require redirection,
+       which is suboptimal.  Indeed, a redirect will only affect a
+       request and the DoH client will need to contact the base server
+       for every request and get redirected to the redirect server.
+       Also, permanent redirects for all these queries would also bloat
+       the client's HTTP cache.
 
-      1.  Every GET request with a new query name will require
-          redirection, which is suboptimal.
-
-      2.  Using POST would solve the issue, nevertheless POST responses
-          are not widely cached as per Section 4.2.3 of [RFC7231].  We
-          need to solve this with GETs.
 
 
 
@@ -282,16 +282,23 @@ Boucadair, et al.       Expires October 18, 2020                [Page 5]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-      3.  At bootstrap, the DoH client sends a GET against a well-known
-          URI (can also be used to retrieve the URI Templates
-          [I-D.ietf-dnsop-resolver-information]).  The server can
-          redirect the client to an alternate server.  The server's
-          response will include: the Authentication Domain Name (ADN) of
-          the redirect server, a list of IP addresses to locate the
-          redirect server, and a list of URI Templates (e.g.,
-          https://cpe123.example.net/dns-query{?dns}).  An example is
-          depicted in Figure 1.  The structure of the response is
-          inspired from the one in Section 4.4.2 of [RFC7975].
+   2.  Using POST would solve the issue, nevertheless POST responses are
+       not widely cached as per Section 4.2.3 of [RFC7231].
+
+   3.  A solution that provides the same benefits as POST but without
+       the caching issues is needed.  Such solution must then rely on
+       GET.  A candidate solution using GET is described hereafter.
+
+   4.  At bootstrap, the DoH client sends a GET against a well-known URI
+       (can also be used to retrieve the URI Templates
+       [I-D.ietf-dnsop-resolver-information]).  The server can redirect
+       the client to an alternate server.  The server's response will
+       include: the Authentication Domain Name (ADN) of the redirect
+       server, a list of IP addresses to locate the redirect server, a
+       list of URI Templates (e.g., https://cpe123.example.net/dns-
+       query{?dns}), CNAME, etc.  An example is depicted in Figure 1.
+       The structure of the response is inspired from the one in
+       Section 4.4.2 of [RFC7975].
 
           {
             "associated-resolvers": {
@@ -317,18 +324,11 @@ Internet-Draft               DoH Redirection                  April 2020
 
                         Figure 1: Response Example
 
-          Subsequent queries will be sent to the redirected server.
+       Subsequent queries will be sent to the redirected server.
 
-      4.  What about relaxing [RFC7838] so that the alternate service
-          presents a certificate of a sub-domain of the Origin?
+       Unlike the GET discussed in the first bullet, this approach does
+       not bloat the cache.
 
-7.  Security Considerations
-
-   DoH-related security considerations are discussed in Section 9 of
-   [RFC8484].
-
-   Section 9 of [RFC7838] describes security considerations related to
-   the use of alternate services.
 
 
 
@@ -337,6 +337,17 @@ Boucadair, et al.       Expires October 18, 2020                [Page 6]
 
 Internet-Draft               DoH Redirection                  April 2020
 
+
+   5.  What about relaxing [RFC7838] so that the alternate service
+       presents a certificate of a sub-domain of the Origin?
+
+7.  Security Considerations
+
+   DoH-related security considerations are discussed in Section 9 of
+   [RFC8484].
+
+   Section 9 of [RFC7838] describes security considerations related to
+   the use of alternate services.
 
    DNS clients that ignore authentication failures and accept spoofed
    certificates will be subject to attacks (e.g., redirect to malicious
@@ -374,6 +385,15 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC7540, May 2015,
               <https://www.rfc-editor.org/info/rfc7540>.
 
+
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    [RFC7838]  Nottingham, M., McManus, P., and J. Reschke, "HTTP
               Alternative Services", RFC 7838, DOI 10.17487/RFC7838,
               April 2016, <https://www.rfc-editor.org/info/rfc7838>.
@@ -386,13 +406,6 @@ Internet-Draft               DoH Redirection                  April 2020
               for DNS over TLS and DNS over DTLS", RFC 8310,
               DOI 10.17487/RFC8310, March 2018,
               <https://www.rfc-editor.org/info/rfc8310>.
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
@@ -429,6 +442,14 @@ Appendix A.  Server Push
    server push is when the server knows that the client will need to
    make a request for a resource, and so provides the answer to that
    request via the server push mechanism.  Sending answers to queries
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    implies that the DoH server performs those queries itself, or
    retrieves them from its cache.
 
@@ -442,14 +463,6 @@ Appendix A.  Server Push
    promise frames would be sent).  Any intermediate CNAME records would
    result in additional push promise frames.  Promise requests cannot
    contain a request body as specified in Section 8.2.1 of [RFC7540],
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 8]
-
-Internet-Draft               DoH Redirection                  April 2020
-
-
    thus they use the GET method specified in Sections 4.1 and 6 of
    [RFC8484].  The A/AAAA responses are then sent in separate streams as
    specified in Section 8.2.2 of [RFC7540].  Finally, the redirect
@@ -481,6 +494,18 @@ Internet-Draft               DoH Redirection                  April 2020
 
 Authors' Addresses
 
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 9]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    Mohamed Boucadair
    Orange
    Rennes  35000
@@ -494,16 +519,6 @@ Authors' Addresses
    UK
 
    Email: neil.cook@noware.co.uk
-
-
-
-
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 9]
-
-Internet-Draft               DoH Redirection                  April 2020
 
 
    Tirumaleswar Reddy
@@ -520,21 +535,6 @@ Internet-Draft               DoH Redirection                  April 2020
    USA
 
    Email: dwing-ietf@fuggles.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

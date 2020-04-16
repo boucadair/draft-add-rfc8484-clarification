@@ -279,8 +279,8 @@
              title="Applicability to DoH Server Redirect">
       <t>This section specifies how DoH server redirection can be safely used
       to present a different URI to a requesting DoH client (<xref
-      target="clarification"></xref>). To that aim, the DoH server uses HTTP
-      redirection (Section 6.4 in <xref target="RFC7231"></xref> or <xref
+      target="clarification"></xref>). To that aim, the DoH server may use
+      HTTP redirection (Section 6.4 in <xref target="RFC7231"></xref> or <xref
       target="RFC7538"></xref>) and the mechanism discussed in <xref
       target="resolution"></xref> to inform the client about the new URI and
       location of the DoH server.</t>
@@ -290,33 +290,41 @@
       available at a separate network location. This mechanism requires the
       alternative service to present a certificate for the origin's host name.
       Nevertheless, <xref target="RFC7838"></xref> is not an option for some
-      redirection scenarios (e.g., <xref
-      target="I-D.btw-add-home"></xref>).</t>
+      redirection scenarios (e.g., Section 7 of <xref
+      target="I-D.btw-add-home"></xref>). Additional complications arise to
+      provide redirection for the latter scenarios:</t>
 
-      <t><list style="empty">
-          <t>Discussion Notes:<list style="numbers">
-              <t>Every GET request with a new query name will require
-              redirection, which is suboptimal.</t>
+      <t><list style="numbers">
+          <t>Every GET request with a new query name will require redirection,
+          which is suboptimal. Indeed, a redirect will only affect a request
+          and the DoH client will need to contact the base server for every
+          request and get redirected to the redirect server. Also, permanent
+          redirects for all these queries would also bloat the client's HTTP
+          cache.</t>
 
-              <t>Using POST would solve the issue, nevertheless POST responses
-              are not widely cached as per Section 4.2.3 of <xref
-              target="RFC7231"></xref>. We need to solve this with GETs.</t>
+          <t>Using POST would solve the issue, nevertheless POST responses are
+          not widely cached as per Section 4.2.3 of <xref
+          target="RFC7231"></xref>. </t>
 
-              <t>At bootstrap, the DoH client sends a GET against a well-known
-              URI (can also be used to retrieve the URI Templates <xref
-              target="I-D.ietf-dnsop-resolver-information"></xref>). The
-              server can redirect the client to an alternate server. The
-              server's response will include: the Authentication Domain Name
-              (ADN) of the redirect server, a list of IP addresses to locate
-              the redirect server, and a list of URI Templates (e.g.,
-              https://cpe123.example.net/dns-query{?dns}). An example is
-              depicted in <xref target="ex"></xref>. The structure of the
-              response is inspired from the one in Section 4.4.2 of <xref
-              target="RFC7975"></xref>.<figure align="center" anchor="ex"
-                  title="Response Example">
-                  <preamble></preamble>
+          <t>A solution that provides the same benefits as POST but without
+          the caching issues is needed. Such solution must then rely on GET. A
+          candidate solution using GET is described hereafter. </t>
 
-                  <artwork align="center"><![CDATA[{
+          <t>At bootstrap, the DoH client sends a GET against a well-known URI
+          (can also be used to retrieve the URI Templates <xref
+          target="I-D.ietf-dnsop-resolver-information"></xref>). The server
+          can redirect the client to an alternate server. The server's
+          response will include: the Authentication Domain Name (ADN) of the
+          redirect server, a list of IP addresses to locate the redirect
+          server, a list of URI Templates (e.g.,
+          https://cpe123.example.net/dns-query{?dns}), CNAME, etc. An example
+          is depicted in <xref target="ex"></xref>. The structure of the
+          response is inspired from the one in Section 4.4.2 of <xref
+          target="RFC7975"></xref>.<figure align="center" anchor="ex"
+              title="Response Example">
+              <preamble></preamble>
+
+              <artwork align="center"><![CDATA[{
   "associated-resolvers": {
     "adn": [
       {
@@ -339,15 +347,18 @@
 }
 ]]></artwork>
 
-                  <postamble></postamble>
-                </figure><vspace blankLines="1" />Subsequent queries will be
-              sent to the redirected server. </t>
+              <postamble></postamble>
+            </figure><vspace blankLines="1" />Subsequent queries will be sent
+          to the redirected server.<vspace blankLines="1" />Unlike the GET
+          discussed in the first bullet, this approach does not bloat the
+          cache. </t>
 
-              <t>What about relaxing <xref target="RFC7838"></xref> so that
-              the alternate service presents a certificate of a sub-domain of
-              the Origin?</t>
-            </list></t>
+          <t>What about relaxing <xref target="RFC7838"></xref> so that the
+          alternate service presents a certificate of a sub-domain of the
+          Origin?</t>
         </list></t>
+
+      <t></t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
