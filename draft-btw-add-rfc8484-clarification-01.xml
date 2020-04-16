@@ -293,10 +293,6 @@
       redirection scenarios (e.g., <xref
       target="I-D.btw-add-home"></xref>).</t>
 
-      <t>If the client does not support the response body with A/AAAA
-      information (<xref target="resolution"></xref>), it will have to resolve
-      the domain name in the redirected URI using Do53.</t>
-
       <t><list style="empty">
           <t>Discussion Notes:<list style="numbers">
               <t>Every GET request with a new query name will require
@@ -307,15 +303,46 @@
               target="RFC7231"></xref>. We need to solve this with GETs.</t>
 
               <t>At bootstrap, the DoH client sends a GET against a well-known
-              URI (can also be used to retrieve the URI Templates). The server
-              can redirect the client to an alternate server. The server's
-              response will include: the Authentication Domain Name (ADN) of
-              the redirect server, a list of IP addresses to locate the
-              redirect server, and a list of URI Templates (e.g.,
-              https://cpe123.example.net/dns-query{?dns}). The redirection
-              will be policy-based.<vspace blankLines="1" />This approach does
-              not bloat the cache. Subsequent queries will be sent to the
-              redirected server. </t>
+              URI (can also be used to retrieve the URI Templates <xref
+              target="I-D.ietf-dnsop-resolver-information"></xref>). The
+              server can redirect the client to an alternate server. The
+              server's response will include: the Authentication Domain Name
+              (ADN) of the redirect server, a list of IP addresses to locate
+              the redirect server, and a list of URI Templates (e.g.,
+              https://cpe123.example.net/dns-query{?dns}). An example is
+              depicted in <xref target="ex"></xref>. The structure of the
+              response is inspired from the one in Section 4.4.2 of <xref
+              target="RFC7975"></xref>.<figure anchor="ex"
+                  title="Response Example">
+                  <preamble></preamble>
+
+                  <artwork><![CDATA[{
+  "associated-resolvers": {
+    "adn": [
+      {
+        "name": "cpe1.example.com",
+        "uri-template": [
+          "https://cpe123.example.net/dns-query{?dns}"
+        ],
+        "a": [
+          "192.0.2.1",
+          "192.0.2.2",
+          "192.0.2.3"
+        ],
+        "aaaa": [
+          "2001:d8::1",
+          "2001:db8::2"
+        ],
+        "ttl": 60
+      }
+    ]
+  }
+}
+]]></artwork>
+
+                  <postamble></postamble>
+                </figure><vspace blankLines="1" />Subsequent queries will be
+              sent to the redirected server. </t>
 
               <t>What about relaxing <xref target="RFC7838"></xref> so that
               the alternate service presents a certificate of a sub-domain of
@@ -369,6 +396,10 @@
 
     <references title="Informative References">
       <?rfc include='reference.I-D.ietf-httpbis-bcp56bis'?>
+
+      <?rfc include='reference.I-D.ietf-dnsop-resolver-information'?>
+
+      <?rfc include='reference.RFC.7975'?>
 
       <?rfc include='reference.I-D.btw-add-home'?>
     </references>

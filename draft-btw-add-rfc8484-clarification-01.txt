@@ -70,11 +70,11 @@ Table of Contents
    5.  Resolving the Redirect Domain . . . . . . . . . . . . . . . .   4
    6.  Applicability to DoH Server Redirect  . . . . . . . . . . . .   5
    7.  Security Considerations . . . . . . . . . . . . . . . . . . .   6
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   6
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .   6
-     10.2.  Informative References . . . . . . . . . . . . . . . . .   7
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   7
+     10.2.  Informative References . . . . . . . . . . . . . . . . .   8
    Appendix A.  Server Push  . . . . . . . . . . . . . . . . . . . .   8
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
@@ -266,14 +266,14 @@ Internet-Draft               DoH Redirection                  April 2020
    [RFC7838] is not an option for some redirection scenarios (e.g.,
    [I-D.btw-add-home]).
 
-   If the client does not support the response body with A/AAAA
-   information (Section 5), it will have to resolve the domain name in
-   the redirected URI using Do53.
-
       Discussion Notes:
 
       1.  Every GET request with a new query name will require
           redirection, which is suboptimal.
+
+      2.  Using POST would solve the issue, nevertheless POST responses
+          are not widely cached as per Section 4.2.3 of [RFC7231].  We
+          need to solve this with GETs.
 
 
 
@@ -282,21 +282,43 @@ Boucadair, et al.       Expires October 18, 2020                [Page 5]
 Internet-Draft               DoH Redirection                  April 2020
 
 
-      2.  Using POST would solve the issue, nevertheless POST responses
-          are not widely cached as per Section 4.2.3 of [RFC7231].  We
-          need to solve this with GETs.
-
       3.  At bootstrap, the DoH client sends a GET against a well-known
-          URI (can also be used to retrieve the URI Templates).  The
-          server can redirect the client to an alternate server.  The
-          server's response will include: the Authentication Domain Name
-          (ADN) of the redirect server, a list of IP addresses to locate
-          the redirect server, and a list of URI Templates (e.g.,
-          https://cpe123.example.net/dns-query{?dns}).  The redirection
-          will be policy-based.
+          URI (can also be used to retrieve the URI Templates
+          [I-D.ietf-dnsop-resolver-information]).  The server can
+          redirect the client to an alternate server.  The server's
+          response will include: the Authentication Domain Name (ADN) of
+          the redirect server, a list of IP addresses to locate the
+          redirect server, and a list of URI Templates (e.g.,
+          https://cpe123.example.net/dns-query{?dns}).  An example is
+          depicted in Figure 1.  The structure of the response is
+          inspired from the one in Section 4.4.2 of [RFC7975].
 
-          This approach does not bloat the cache.  Subsequent queries
-          will be sent to the redirected server.
+   {
+     "associated-resolvers": {
+       "adn": [
+         {
+           "name": "cpe1.example.com",
+           "uri-template": [
+             "https://cpe123.example.net/dns-query{?dns}"
+           ],
+           "a": [
+             "192.0.2.1",
+             "192.0.2.2",
+             "192.0.2.3"
+           ],
+           "aaaa": [
+             "2001:d8::1",
+             "2001:db8::2"
+           ],
+           "ttl": 60
+         }
+       ]
+     }
+   }
+
+                        Figure 1: Response Example
+
+          Subsequent queries will be sent to the redirected server.
 
       4.  What about relaxing [RFC7838] so that the alternate service
           presents a certificate of a sub-domain of the Origin?
@@ -308,6 +330,13 @@ Internet-Draft               DoH Redirection                  April 2020
 
    Section 9 of [RFC7838] describes security considerations related to
    the use of alternate services.
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 6]
+
+Internet-Draft               DoH Redirection                  April 2020
+
 
    DNS clients that ignore authentication failures and accept spoofed
    certificates will be subject to attacks (e.g., redirect to malicious
@@ -330,13 +359,6 @@ Internet-Draft               DoH Redirection                  April 2020
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 6]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -365,6 +387,13 @@ Internet-Draft               DoH Redirection                  April 2020
               DOI 10.17487/RFC8310, March 2018,
               <https://www.rfc-editor.org/info/rfc8310>.
 
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 7]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
@@ -377,22 +406,21 @@ Internet-Draft               DoH Redirection                  April 2020
               Deployment Considerations for Home Networks", draft-btw-
               add-home-05 (work in progress), April 2020.
 
+   [I-D.ietf-dnsop-resolver-information]
+              Sood, P., Arends, R., and P. Hoffman, "DNS Resolver
+              Information Self-publication", draft-ietf-dnsop-resolver-
+              information-01 (work in progress), February 2020.
+
    [I-D.ietf-httpbis-bcp56bis]
               Nottingham, M., "Building Protocols with HTTP", draft-
               ietf-httpbis-bcp56bis-09 (work in progress), November
               2019.
 
-
-
-
-
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 7]
-
-Internet-Draft               DoH Redirection                  April 2020
-
+   [RFC7975]  Niven-Jenkins, B., Ed. and R. van Brandenburg, Ed.,
+              "Request Routing Redirection Interface for Content
+              Delivery Network (CDN) Interconnection", RFC 7975,
+              DOI 10.17487/RFC7975, October 2016,
+              <https://www.rfc-editor.org/info/rfc7975>.
 
 Appendix A.  Server Push
 
@@ -414,13 +442,21 @@ Appendix A.  Server Push
    promise frames would be sent).  Any intermediate CNAME records would
    result in additional push promise frames.  Promise requests cannot
    contain a request body as specified in Section 8.2.1 of [RFC7540],
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 8]
+
+Internet-Draft               DoH Redirection                  April 2020
+
+
    thus they use the GET method specified in Sections 4.1 and 6 of
    [RFC8484].  The A/AAAA responses are then sent in separate streams as
    specified in Section 8.2.2 of [RFC7540].  Finally, the redirect
    response itself is sent.
 
    An example of the use of server push for redirection is shown in
-   Figure 1.
+   Figure 2.
 
      DoH client                                             DoH server
          |                                                        |
@@ -433,7 +469,7 @@ Appendix A.  Server Push
          |<===== Push Response for redirect.example.com/AAAA======|
          |                             ...                        |
 
-                   Figure 1: Redirect using Server Push
+                   Figure 2: Redirect using Server Push
 
    The advantage of using server push to provide the DNS resolution
    information of the redirect domain is that, assuming that the DoH
@@ -442,13 +478,6 @@ Appendix A.  Server Push
 
    Disadvantages include the possibility that DoH clients do not support
    server push.
-
-
-
-Boucadair, et al.       Expires October 18, 2020                [Page 8]
-
-Internet-Draft               DoH Redirection                  April 2020
-
 
 Authors' Addresses
 
@@ -465,6 +494,16 @@ Authors' Addresses
    UK
 
    Email: neil.cook@noware.co.uk
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 18, 2020                [Page 9]
+
+Internet-Draft               DoH Redirection                  April 2020
 
 
    Tirumaleswar Reddy
@@ -501,4 +540,21 @@ Authors' Addresses
 
 
 
-Boucadair, et al.       Expires October 18, 2020                [Page 9]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.       Expires October 18, 2020               [Page 10]
