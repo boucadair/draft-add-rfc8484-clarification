@@ -305,6 +305,10 @@
           not widely cached as per Section 4.2.3 of <xref
           target="RFC7231"></xref>. </t>
 
+          <t>What about relaxing <xref target="RFC7838"></xref> so that the
+          alternate service presents a certificate of a sub-domain of the
+          Origin?</t>
+
           <t>A solution that provides the same benefits as POST but without
           the caching issues is needed. Such solution must then rely upon HTTP
           GET method. A candidate solution using GET is described hereafter.
@@ -351,10 +355,6 @@
               <postamble></postamble>
             </figure><vspace blankLines="1" />Unlike the GET discussed in the
           first bullet, this approach does not bloat the cache. </t>
-
-          <t>What about relaxing <xref target="RFC7838"></xref> so that the
-          alternate service presents a certificate of a sub-domain of the
-          Origin?</t>
         </list></t>
 
       <t></t>
