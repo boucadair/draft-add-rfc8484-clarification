@@ -110,7 +110,7 @@
     <abstract>
       <t>This document clarifies whether DNS-over-HTTPS (DoH) redirection is
       allowed, describes potential issues with redirection in DoH, and
-      proposes how redirection might be performed.</t>
+      proposes how DoH redirection might be performed.</t>
     </abstract>
   </front>
 
@@ -142,7 +142,7 @@
 
     <section title="Discussion">
       <t><xref target="RFC8484"></xref> indicates that the support of
-      HTTP (<xref target="RFC7540"></xref>)
+      HTTP <xref target="RFC7540"></xref>
       redirection is one of DoH design goals (Section 1):<list style="empty">
           <t>"The described approach is more than a tunnel over HTTP. It
           establishes default media formatting types for requests and
@@ -231,8 +231,7 @@
         </list></t>
     </section>
 
-    <section anchor="redirection_issues" title="Issues with
-                                                Redirection in DoH">
+    <section anchor="redirection_issues" title="Issues with Redirection in DoH">
       <t>There are several potential issues with redirection in DoH,
       which are summarized below.</t>
 
@@ -248,9 +247,9 @@
         the certificate presented by the alternative service must be
         valid for the origin. This restriction means that alternative
         services cannot be used for use-cases such as redirecting the
-        client to a locally administered DoH server (e.g. resolver or
+        client to a locally administered DoH server (e.g., resolver or
         forwarder) which does not have a certificate valid for the
-        origin. Additionally, alternative services suffers from the
+        origin. Additionally, alternative services suffer from the
         bootstrapping issue described below.
       </t>
 
@@ -264,7 +263,7 @@
           unique request, and the DoH client will thus need to contact
           the origin server for every new request and get
           redirected, requiring two roundtrips. Also, permanent
-          redirects (<xref target="RFC7538"></xref>) for all these
+          redirects <xref target="RFC7538"></xref> for all these
           queries would bloat the client's HTTP cache.
         </t> 
         <t>
@@ -278,8 +277,8 @@
       </t>
 
       <t>
-        The final issue with using HTTP redirection is one of
-        bootstrapping; any server that is relying solely on a DoH server
+        The final issue with using HTTP redirection is 
+        bootstrapping; any client that is relying solely upon a DoH server
         for resolution must be able to resolve the domain in the
         redirect response.  Even if
         a DoH client has a plaintext DNS resolver configured, using that
@@ -295,25 +294,25 @@
       <t>
         The above issues would seem to indicate that despite the
         intention of <xref target="RFC8484"></xref> to align itself with
-        HTTP redirection, some work is required in order for any
-        other mechanism than alternative services (<xref target="RFC7838"></xref>)
+        HTTP redirection, some additional work is required in order for any
+        other mechanism than alternative services (e.g., <xref target="RFC7838"></xref>)
         to be deployed with confidence.
       </t>
 
       <t>The rest of this document considers the issue of redirection at two levels:
       <list style="numbers">
         <t>
-          Service-level Redirect - Similar to alternative services, this
+          Service-level Redirect: Similar to alternative services, this
           would allow a DoH server to redirect a DoH client to an
           alternative service for all future queries, rather than on a
           per-resource basis.
         </t>
         <t>
-          Resource-Level Redirect - Solving the bootstrapping problem for
+          Resource-Level Redirect: Solving the bootstrapping problem for
           regular HTTP redirects. Note that this doesn't solve the caching
-          issues described above, and does invite the question of whether
+          issues described above, and does raise the question of whether
           regular HTTP redirection is desirable or worthwhile
-          (i.e. are there any valid use-cases for resource-level
+          (i.e., are there any valid use-cases for resource-level
           redirection in DoH?).
         </t>
       </list>
@@ -336,13 +335,12 @@
         </list>
       </t>
 
-      <section anchor="extend_7838" title="Extending Alternative
-                                           Services">
+      <section anchor="extend_7838" title="Extending Alternative Services">
         <t>
           Section 9.2 of <xref target="RFC7838"></xref> discusses the
           possibilities for attackers to hijack the communication to an
           origin. This is the justification for the requirement in
-          Section 2.1 that "Clients MUST have reasonable assurances that
+          Section 2.1 of <xref target="RFC7838"></xref> that "Clients MUST have reasonable assurances that
           the alternative service is under control of and valid for the
           whole origin.".
         </t>
@@ -353,7 +351,7 @@
           definition, resistant to MITM attacks. Thus it could be argued
           that in these circumstances, relaxing the host authentication
           requirements is justified. The relaxation could be limited,
-          e.g. still requiring some relationship between the origin and
+          e.g., still requiring some relationship between the origin and
           the alternative, or unlimited, allowing no such relationship
           to exist.
         </t>
@@ -370,18 +368,18 @@
           allows the use of a well-known URI to retrieve resolver
           information, which presumably could include specifying
           alternative services, through the use of a JSON object in
-          the RESINFO response RR. The example in  <xref
+          the RESINFO response RR.</t><t>The example in  <xref
           target="ex"></xref> shows what a JSON object might look like
           that specified one or more alternative services. The
           structure of the response is inspired by
-          Section 4.4.2 of <xref target="RFC7975"></xref>. Note that
+          Section 4.4.2 of <xref target="RFC7975"></xref>. </t><t>Note that
           the response includes "glue" RR information to allow the
           alternative service to be accessed without further DNS
           queries, and includes an authenticated domain name to be
           used for authenticating the alternative service.
         </t>
         <t>
-        <figure align="center" anchor="ex" title="Response Example">
+        <figure align="center" anchor="ex" title="Response Example with "Glue" RR Information">
           <preamble></preamble>
           <artwork align="center"><![CDATA[{
   "associated-resolvers": {
