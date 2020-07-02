@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+     which is available here: http://xml.resource.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+     There has to be one entity for each item to be referenced. 
+     An alternate method (rfc include) is described in the references. -->
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc category="std" docName="draft-btw-add-rfc8484-clarification-00"
+     ipr="trust200902" updates="8484">
+  <front>
+    <title abbrev="DoH Redirection">Supporting Redirection for DNS
+    Queries over HTTPS (DoH)</title>
+
+    <author fullname="Mohamed Boucadair" initials="M." surname="Boucadair">
+      <organization>Orange</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <city>Rennes</city>
+
+          <code>35000</code>
+
+          <country>France</country>
+        </postal>
+
+        <email>mohamed.boucadair@orange.com</email>
+      </address>
+    </author>
+
+    <author fullname="Neil Cook" initials="N." surname="Cook">
+      <organization>Open-Xchange</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <country>UK</country>
+        </postal>
+
+        <email>neil.cook@noware.co.uk</email>
+      </address>
+    </author>
+
+    <author fullname="Tirumaleswar Reddy" initials="T." surname="Reddy">
+      <organization abbrev="McAfee">McAfee, Inc.</organization>
+
+      <address>
+        <postal>
+          <street>Embassy Golf Link Business Park</street>
+
+          <city>Bangalore</city>
+
+          <region>Karnataka</region>
+
+          <code>560071</code>
+
+          <country>India</country>
+        </postal>
+
+        <email>TirumaleswarReddy_Konda@McAfee.com</email>
+      </address>
+    </author>
+
+    <author fullname="Dan Wing" initials="D." surname="Wing">
+      <organization abbrev="Citrix">Citrix Systems, Inc.</organization>
+
+      <address>
+        <postal>
+          <street></street>
+
+          <country>USA</country>
+        </postal>
+
+        <email>dwing-ietf@fuggles.com</email>
+      </address>
+    </author>
+
+    <date />
+
+    <workgroup>ADD</workgroup>
+
+    <abstract>
+      <t>This document clarifies whether DNS-over-HTTPS (DoH) redirection is
+      allowed, describes potential issues with redirection in DoH, and
+      proposes how DoH redirection might be performed.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>This document clarifies the intent of DNS-over-HTTPS (DoH) <xref
+      target="RFC8484"></xref> whether redirection is allowed (<xref
+      target="clarification"></xref>), potential issues with
+      redirection in DoH (<xref target="redirection_issues"></xref>)
+      and subsequently makes some proposals for how service-level
+      (<xref target="service_level"></xref>) and resource-level (<xref
+      target="resource_level"></xref>) redirection might be performed.</t>
+
+      <t>This document adheres to Section 4.3 of <xref
+      target="I-D.ietf-httpbis-bcp56bis"></xref> which discusses the need for
+      protocols using HTTP to specify redirect handling to avoid
+      interoperability problems.</t>
+    </section>
+
+    <section anchor="notation" title="Terminology">
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"></xref><xref target="RFC8174"></xref> when, and
+      only when, they appear in all capitals, as shown here.</t>
+
+      <t>"A/AAAA" is used to refer to "A and/or AAAA records".</t>
+    </section>
+
+    <section title="Discussion">
+      <t><xref target="RFC8484"></xref> indicates that the support of
+      HTTP <xref target="RFC7540"></xref>
+      redirection is one of DoH design goals (Section 1):<list style="empty">
+          <t>"The described approach is more than a tunnel over HTTP. It
+          establishes default media formatting types for requests and
+          responses but uses normal HTTP content negotiation mechanisms for
+          selecting alternatives that endpoints may prefer in anticipation of
+          serving new use cases. In addition to this media type negotiation,
+          it aligns itself with HTTP features such as caching, redirection,
+          proxying, authentication, and compression.</t>
+
+          <t>The integration with HTTP provides a transport suitable for both
+          existing DNS clients and native web applications seeking access to
+          the DNS."</t>
+        </list></t>
+
+      <t>Nevertheless, Section 3 of <xref target="RFC8484"></xref> indicates
+      the following:<list style="empty">
+          <t>"This specification does not extend DNS resolution privileges to
+          URIs that are not recognized by the DoH client as configured
+          URIs."</t>
+        </list></t>
+
+      <t>This looks like an internal inconsistency of <xref
+      target="RFC8484"></xref> that is worth the clarification: is redirection
+      allowed or not?</t>
+
+      <t>Also, Section 3 of <xref target="RFC8484"></xref> indicates that:</t>
+
+      <t><list style="empty">
+          <t>"A DoH client MUST NOT use a different URI simply because it was
+          discovered outside of the client's configuration (such as through
+          HTTP/2 server push) or because a server offers an unsolicited
+          response that appears to be a valid answer to a DNS query."</t>
+        </list></t>
+
+      <t>Nevertheless, <xref target="RFC8484"></xref> does not:</t>
+
+      <t><list style="symbols">
+          <t>specify under which conditions a discovered different URI can be
+          used.</t>
+
+          <t>describe how a different URI can be discovered using HTTP/2
+          server push. The only available example in the mailing list archives
+          clarifies that server push is an example of unsolicited responses.
+          <vspace blankLines="1" />The text was updated late in the
+          publication process to address this comment:
+          https://mailarchive.ietf.org/arch/msg/doh/f_V-tBgB-KRsLZhttx9tGt75cps/.
+          The example provided in the thread (server push) is related to the
+          second part of the above excerpt.</t>
+
+          <t>clarify that unsolicited messages from a trusted DoH server
+          should be excluded.</t>
+        </list></t>
+
+      <t>A clarification is proposed in <xref target="clarification"></xref>.
+      This clarification focuses on a "different URI" that might be discovered
+      while communicating with an HTTP server.</t>
+
+      <t>Additionally, assuming that redirection is allowed, this
+      specification recommends how it is achieved, specifically regarding
+      inline resolution of any domain name in the redirect URI. This is
+      required because redirection to a domain-based URI requires DNS
+      resolution of that domain name, which creates a potential bootstrapping
+      problem (e.g., If DoH server is the only configured DNS server,
+      redirecting the client to a new server by presenting a name will
+      fail).</t>
+    </section>
+
+    <section anchor="clarification" title="RFC8484 Update">
+      <t>OLD:<list style="empty">
+          <t>A DoH client MUST NOT use a different URI simply because it was
+          discovered outside of the client's configuration (such as through
+          HTTP/2 server push) or because a server offers an unsolicited
+          response that appears to be a valid answer to a DNS query.</t>
+        </list></t>
+
+      <t>NEW<list style="empty">
+          <t>A DoH client MUST NOT use a different URI that was discovered
+          outside of the client's configuration when communicating with HTTP
+          servers except via HTTP redirection from a configured URI (Section
+          6.4 of <xref target="RFC7231"></xref>).</t>
+
+          <t>Also, a DoH client MUST ignore an unsolicited response (such as
+          through HTTP/2 server push) that appears to be a valid answer to a
+          DNS query unless that response comes from a configured URI (as
+          described in Section 5.3).</t>
+        </list></t>
+    </section>
+
+    <section anchor="redirection_issues" title="Issues with Redirection in DoH">
+      <t>There are several potential issues with redirection in DoH,
+      which are summarized below.</t>
+
+      <t>
+        The first issue to be considered is whether a new document
+        considering redirection is needed at all. Redirection in HTTP
+        is done on a per-resource basis; if the only functionality
+        required is to redirect all requests to an entirely different
+        server under the same administrative control, then the
+        alternative service mechanism described in <xref
+        target="RFC7838"></xref> might be sufficient. However, there are
+        restrictions on the use of alternative services; specifically
+        the certificate presented by the alternative service must be
+        valid for the origin. This restriction means that alternative
+        services cannot be used for use-cases such as redirecting the
+        client to a locally administered DoH server (e.g., resolver or
+        forwarder) which does not have a certificate valid for the
+        origin. Additionally, alternative services suffer from the
+        bootstrapping issue described below.
+      </t>
+
+      <t>
+        The second issue is that HTTP redirection is done on a
+        per-resource basis; this presents several problems for DoH:
+      <list style="numbers">
+        <t>
+          Every GET request with a new query name will require redirection,
+          which is suboptimal. Indeed, a redirect will only affect a
+          unique request, and the DoH client will thus need to contact
+          the origin server for every new request and get
+          redirected, requiring two roundtrips. Also, permanent
+          redirects <xref target="RFC7538"></xref> for all these
+          queries would bloat the client's HTTP cache.
+        </t> 
+        <t>
+          Using POST requests would solve the issue. Nevertheless POST responses are
+          not widely cached as per Section 4.2.3 of <xref
+          target="RFC7231"></xref>, and mandating the use of POST
+          requests for DoH in order to enable redirection hardly seems
+          reasonable.
+        </t>
+      </list>
+      </t>
+
+      <t>
+        The final issue with using HTTP redirection is 
+        bootstrapping; any client that is relying solely upon a DoH server
+        for resolution must be able to resolve the domain in the
+        redirect response.  Even if
+        a DoH client has a plaintext DNS resolver configured, using that
+        resolver is considered as a minimal privacy leakage <xref
+        target="RFC8310"></xref>. One possible solution is for the DoH client
+        to use the same server that returned the redirect response to
+        perform the resolution, however that may then lead to a further
+        redirect response. Another solution is for the DoH server to
+        include additional information in the response, similar to the
+        "glue" records as defined in <xref target="RFC7719"></xref>.
+      </t>
+      
+      <t>
+        The above issues would seem to indicate that despite the
+        intention of <xref target="RFC8484"></xref> to align itself with
+        HTTP redirection, some additional work is required in order for any
+        other mechanism than alternative services (e.g., <xref target="RFC7838"></xref>)
+        to be deployed with confidence.
+      </t>
+
+      <t>The rest of this document considers the issue of redirection at two levels:
+      <list style="numbers">
+        <t>
+          Service-level Redirect: Similar to alternative services, this
+          would allow a DoH server to redirect a DoH client to an
+          alternative service for all future queries, rather than on a
+          per-resource basis.
+        </t>
+        <t>
+          Resource-Level Redirect: Solving the bootstrapping problem for
+          regular HTTP redirects. Note that this doesn't solve the caching
+          issues described above, and does raise the question of whether
+          regular HTTP redirection is desirable or worthwhile
+          (i.e., are there any valid use-cases for resource-level
+          redirection in DoH?).
+        </t>
+      </list>
+      </t>
+    </section>
+      
+    <section anchor="service_level" title="Service-Level Redirect">
+      <t>
+        We consider two possibilities for service-level redirect:
+        <list style="numbers">
+          <t>
+            Extending <xref target="RFC7838"></xref> by relaxing the
+            host authentication checks.
+          </t>
+          <t>
+            Using the well-known URI specified in <xref
+            target="I-D.pp-add-resinfo"></xref> to return information
+            about alternative services.
+          </t>
+        </list>
+      </t>
+
+      <section anchor="extend_7838" title="Extending Alternative Services">
+        <t>
+          Section 9.2 of <xref target="RFC7838"></xref> discusses the
+          possibilities for attackers to hijack the communication to an
+          origin. This is the justification for the requirement in
+          Section 2.1 of <xref target="RFC7838"></xref> that "Clients MUST have reasonable assurances that
+          the alternative service is under control of and valid for the
+          whole origin.".
+        </t>
+        <t>
+          However, when a DoH server presents an alternative 
+          DoH service to a DoH client, both the origin and alternative
+          service, as well as the DNS queries and responses, must be, by
+          definition, resistant to MITM attacks. Thus it could be argued
+          that in these circumstances, relaxing the host authentication
+          requirements is justified. The relaxation could be limited,
+          e.g., still requiring some relationship between the origin and
+          the alternative, or unlimited, allowing no such relationship
+          to exist.
+        </t>
+        <t>
+          The bootstrapping issues described in <xref
+          target="redirection_issues"></xref> still apply, which may
+          make this proposal unsuitable for wide deployment.
+        </t>
+      </section>
+
+      <section anchor="well_known_uri" title="Well-Known URI">
+        <t>
+          Section 3 of <xref target="I-D.pp-add-resinfo"></xref>
+          allows the use of a well-known URI to retrieve resolver
+          information, which presumably could include specifying
+          alternative services, through the use of a JSON object in
+          the RESINFO response RR.</t><t>The example in  <xref
+          target="ex"></xref> shows what a JSON object might look like
+          that specified one or more alternative services. The
+          structure of the response is inspired by
+          Section 4.4.2 of <xref target="RFC7975"></xref>. </t><t>Note that
+          the response includes "glue" RR information to allow the
+          alternative service to be accessed without further DNS
+          queries, and includes an authenticated domain name to be
+          used for authenticating the alternative service.
+        </t>
+        <t>
+        <figure align="center" anchor="ex" title="Response Example with Glue RR Information">
+          <preamble></preamble>
+          <artwork align="center"><![CDATA[{
+  "associated-resolvers": {
+    "adn": [
+      {
+        "name": "cpe123.example.net",
+        "uri-template": [
+          "https://cpe123.example.net/dns-query{?dns}"
+        ],
+        "a": [
+          "192.0.2.1",
+          "192.0.2.2"
+        ],
+        "aaaa": [
+          "2001:db8::1",
+          "2001:db8::2"
+        ],
+        "ttl": 3600
+      }
+    ]
+  }
+}
+]]>
+          </artwork>
+          <postamble></postamble>
+        </figure>
+        <vspace blankLines="1" />
+        </t>
+      </section>
+    </section>
+    
+    <section anchor="resource_level" title="Resource-Level Redirect">
+      <t>
+        Notwithstanding the issues with resource-level redirects
+        described in <xref target="redirection_issues"></xref>, this
+        section describes a proposal for returning the "glue" RRs
+        required to avoid the bootstrapping issue described in that
+        section (but not the roundtrip or caching issues).
+      </t>
+
+      <t>
+        Servers supporting DoH redirect MUST support returning the redirect
+        response body mechanism described hereafter.
+      <list style="empty">
+        <t>
+          Note: "MUST" is used here because resolving the redirect name
+          using Do53 will fail in some configurations,
+          e.g., https://wiki.mozilla.org/Trusted_Recursive_Resolver
+          (network.trr.mode=3).
+        </t>
+      </list>
+      </t>
+
+      <t>
+        Concretely, the DoH server returns in the response body a DNS
+        response with an 'application/dns-message' media type as specified in
+        Section 6 of <xref target="RFC8484"></xref>, containing any A and AAAA
+        records for the domain name in the redirect URI, including any
+        CNAMEs.
+      </t>
+
+      <t>
+        For example, if the redirect URI contains the domain name
+        "redirect.example.com", and "redirect.example.com" is a CNAME pointing
+        to "real.example.com", then an example response body would contain:
+      <list style="symbols">
+          <t>A CNAME record for "redirect.example.com"</t>
+
+          <t>Any A records for "real.example.com"</t>
+
+          <t>Any AAAA records for "real.example.com"</t>
+        </list></t>
+
+      <t>This approach is simple; no client or server support of server push
+      is required, and it is also more efficient in terms of the amount of
+      data transmitted.</t>
+
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>
+        DoH-related security considerations are discussed in Section 9 of
+        <xref target="RFC8484"></xref>.
+      </t>
+      <t>
+        Section 9 of <xref target="RFC7838"></xref> describes security
+        considerations related to the use of alternate
+        services. Relaxing the host authentication requirements would
+        certainly warrant additional security considerations.
+      </t>
+    </section>
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This document does not request any action from IANA.</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>Many thanks to Christian Jacquenet, Philippe Fouquart, and Ben
+      Schwartz for the comments.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.7231'?>
+
+      <?rfc include='reference.RFC.7540'?>
+
+      <?rfc include='reference.RFC.8174'?>
+
+      <?rfc include='reference.RFC.8484'?>
+
+      <?rfc include='reference.RFC.8310'?>
+
+      <?rfc include='reference.RFC.7838'?>
+
+      <?rfc include='reference.RFC.7538'?>
+
+      <?rfc include='reference.I-D.pp-add-resinfo'?>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.I-D.ietf-httpbis-bcp56bis'?>
+
+      <?rfc include='reference.RFC.7975'?>
+
+      <?rfc include='reference.RFC.7719'?>
+
+    </references>
+  </back>
+</rfc>
