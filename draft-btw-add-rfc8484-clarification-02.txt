@@ -20,7 +20,7 @@ Abstract
 
    This document clarifies whether DNS-over-HTTPS (DoH) redirection is
    allowed, describes potential issues with redirection in DoH, and
-   proposes how redirection might be performed.
+   proposes how DoH redirection might be performed.
 
 Status of This Memo
 
@@ -68,11 +68,9 @@ Table of Contents
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   2
    3.  Discussion  . . . . . . . . . . . . . . . . . . . . . . . . .   3
    4.  RFC8484 Update  . . . . . . . . . . . . . . . . . . . . . . .   4
-   5.  Issues with
-       Redirection in DoH  . . . . . . . . . . . . . . . . . . . . .   4
+   5.  Issues with Redirection in DoH  . . . . . . . . . . . . . . .   4
    6.  Service-Level Redirect  . . . . . . . . . . . . . . . . . . .   6
-     6.1.  Extending Alternative
-           Services  . . . . . . . . . . . . . . . . . . . . . . . .   6
+     6.1.  Extending Alternative Services  . . . . . . . . . . . . .   6
      6.2.  Well-Known URI  . . . . . . . . . . . . . . . . . . . . .   6
    7.  Resource-Level Redirect . . . . . . . . . . . . . . . . . . .   7
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
@@ -109,6 +107,8 @@ Table of Contents
 
 
 
+
+
 Boucadair, et al.        Expires January 3, 2021                [Page 2]
 
 Internet-Draft               DoH Redirection                   July 2020
@@ -116,8 +116,8 @@ Internet-Draft               DoH Redirection                   July 2020
 
 3.  Discussion
 
-   [RFC8484] indicates that the support of HTTP ([RFC7540]) redirection
-   is one of DoH design goals (Section 1):
+   [RFC8484] indicates that the support of HTTP [RFC7540] redirection is
+   one of DoH design goals (Section 1):
 
       "The described approach is more than a tunnel over HTTP.  It
       establishes default media formatting types for requests and
@@ -230,9 +230,9 @@ Internet-Draft               DoH Redirection                   July 2020
    certificate presented by the alternative service must be valid for
    the origin.  This restriction means that alternative services cannot
    be used for use-cases such as redirecting the client to a locally
-   administered DoH server (e.g. resolver or forwarder) which does not
+   administered DoH server (e.g., resolver or forwarder) which does not
    have a certificate valid for the origin.  Additionally, alternative
-   services suffers from the bootstrapping issue described below.
+   services suffer from the bootstrapping issue described below.
 
    The second issue is that HTTP redirection is done on a per-resource
    basis; this presents several problems for DoH:
@@ -241,7 +241,7 @@ Internet-Draft               DoH Redirection                   July 2020
        which is suboptimal.  Indeed, a redirect will only affect a
        unique request, and the DoH client will thus need to contact the
        origin server for every new request and get redirected, requiring
-       two roundtrips.  Also, permanent redirects ([RFC7538]) for all
+       two roundtrips.  Also, permanent redirects [RFC7538] for all
        these queries would bloat the client's HTTP cache.
 
    2.  Using POST requests would solve the issue.  Nevertheless POST
@@ -249,8 +249,8 @@ Internet-Draft               DoH Redirection                   July 2020
        [RFC7231], and mandating the use of POST requests for DoH in
        order to enable redirection hardly seems reasonable.
 
-   The final issue with using HTTP redirection is one of bootstrapping;
-   any server that is relying solely on a DoH server for resolution must
+   The final issue with using HTTP redirection is bootstrapping; any
+   client that is relying solely upon a DoH server for resolution must
    be able to resolve the domain in the redirect response.  Even if a
    DoH client has a plaintext DNS resolver configured, using that
    resolver is considered as a minimal privacy leakage [RFC8310].  One
@@ -261,14 +261,14 @@ Internet-Draft               DoH Redirection                   July 2020
    response, similar to the "glue" records as defined in [RFC7719].
 
    The above issues would seem to indicate that despite the intention of
-   [RFC8484] to align itself with HTTP redirection, some work is
-   required in order for any other mechanism than alternative services
-   ([RFC7838]) to be deployed with confidence.
+   [RFC8484] to align itself with HTTP redirection, some additional work
+   is required in order for any other mechanism than alternative
+   services (e.g., [RFC7838]) to be deployed with confidence.
 
    The rest of this document considers the issue of redirection at two
    levels:
 
-   1.  Service-level Redirect - Similar to alternative services, this
+   1.  Service-level Redirect: Similar to alternative services, this
        would allow a DoH server to redirect a DoH client to an
        alternative service for all future queries, rather than on a per-
        resource basis.
@@ -282,10 +282,10 @@ Boucadair, et al.        Expires January 3, 2021                [Page 5]
 Internet-Draft               DoH Redirection                   July 2020
 
 
-   2.  Resource-Level Redirect - Solving the bootstrapping problem for
+   2.  Resource-Level Redirect: Solving the bootstrapping problem for
        regular HTTP redirects.  Note that this doesn't solve the caching
-       issues described above, and does invite the question of whether
-       regular HTTP redirection is desirable or worthwhile (i.e. are
+       issues described above, and does raise the question of whether
+       regular HTTP redirection is desirable or worthwhile (i.e., are
        there any valid use-cases for resource-level redirection in
        DoH?).
 
@@ -302,16 +302,16 @@ Internet-Draft               DoH Redirection                   July 2020
 
    Section 9.2 of [RFC7838] discusses the possibilities for attackers to
    hijack the communication to an origin.  This is the justification for
-   the requirement in Section 2.1 that "Clients MUST have reasonable
-   assurances that the alternative service is under control of and valid
-   for the whole origin.".
+   the requirement in Section 2.1 of [RFC7838] that "Clients MUST have
+   reasonable assurances that the alternative service is under control
+   of and valid for the whole origin.".
 
    However, when a DoH server presents an alternative DoH service to a
    DoH client, both the origin and alternative service, as well as the
    DNS queries and responses, must be, by definition, resistant to MITM
    attacks.  Thus it could be argued that in these circumstances,
    relaxing the host authentication requirements is justified.  The
-   relaxation could be limited, e.g. still requiring some relationship
+   relaxation could be limited, e.g., still requiring some relationship
    between the origin and the alternative, or unlimited, allowing no
    such relationship to exist.
 
@@ -323,13 +323,13 @@ Internet-Draft               DoH Redirection                   July 2020
    Section 3 of [I-D.pp-add-resinfo] allows the use of a well-known URI
    to retrieve resolver information, which presumably could include
    specifying alternative services, through the use of a JSON object in
-   the RESINFO response RR.  The example in Figure 1 shows what a JSON
-   object might look like that specified one or more alternative
-   services.  The structure of the response is inspired by Section 4.4.2
-   of [RFC7975].  Note that the response includes "glue" RR information
-   to allow the alternative service to be accessed without further DNS
-   queries, and includes an authenticated domain name to be used for
-   authenticating the alternative service.
+   the RESINFO response RR.
+
+   The example in Figure 1 shows what a JSON object might look like that
+   specified one or more alternative services.  The structure of the
+   response is inspired by Section 4.4.2 of [RFC7975].
+
+
 
 
 
@@ -337,6 +337,11 @@ Boucadair, et al.        Expires January 3, 2021                [Page 6]
 
 Internet-Draft               DoH Redirection                   July 2020
 
+
+   Note that the response includes "glue" RR information to allow the
+   alternative service to be accessed without further DNS queries, and
+   includes an authenticated domain name to be used for authenticating
+   the alternative service.
 
           {
             "associated-resolvers": {
@@ -361,7 +366,7 @@ Internet-Draft               DoH Redirection                   July 2020
           }
 
 
-                        Figure 1: Response Example
+            Figure 1: Response Example with Glue RR Information
 
 
 7.  Resource-Level Redirect
@@ -381,11 +386,6 @@ Internet-Draft               DoH Redirection                   July 2020
 
    Concretely, the DoH server returns in the response body a DNS
    response with an 'application/dns-message' media type as specified in
-   Section 6 of [RFC8484], containing any A and AAAA records for the
-   domain name in the redirect URI, including any CNAMEs.
-
-   For example, if the redirect URI contains the domain name
-   "redirect.example.com", and "redirect.example.com" is a CNAME
 
 
 
@@ -394,6 +394,11 @@ Boucadair, et al.        Expires January 3, 2021                [Page 7]
 Internet-Draft               DoH Redirection                   July 2020
 
 
+   Section 6 of [RFC8484], containing any A and AAAA records for the
+   domain name in the redirect URI, including any CNAMEs.
+
+   For example, if the redirect URI contains the domain name
+   "redirect.example.com", and "redirect.example.com" is a CNAME
    pointing to "real.example.com", then an example response body would
    contain:
 
@@ -435,11 +440,6 @@ Internet-Draft               DoH Redirection                   July 2020
               publication", draft-pp-add-resinfo-02 (work in progress),
               June 2020.
 
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/info/rfc2119>.
-
 
 
 
@@ -449,6 +449,11 @@ Boucadair, et al.        Expires January 3, 2021                [Page 8]
 
 Internet-Draft               DoH Redirection                   July 2020
 
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -492,11 +497,6 @@ Internet-Draft               DoH Redirection                   July 2020
               Terminology", RFC 7719, DOI 10.17487/RFC7719, December
               2015, <https://www.rfc-editor.org/info/rfc7719>.
 
-   [RFC7975]  Niven-Jenkins, B., Ed. and R. van Brandenburg, Ed.,
-              "Request Routing Redirection Interface for Content
-              Delivery Network (CDN) Interconnection", RFC 7975,
-              DOI 10.17487/RFC7975, October 2016,
-              <https://www.rfc-editor.org/info/rfc7975>.
 
 
 
@@ -505,6 +505,12 @@ Boucadair, et al.        Expires January 3, 2021                [Page 9]
 
 Internet-Draft               DoH Redirection                   July 2020
 
+
+   [RFC7975]  Niven-Jenkins, B., Ed. and R. van Brandenburg, Ed.,
+              "Request Routing Redirection Interface for Content
+              Delivery Network (CDN) Interconnection", RFC 7975,
+              DOI 10.17487/RFC7975, October 2016,
+              <https://www.rfc-editor.org/info/rfc7975>.
 
 Authors' Addresses
 
@@ -537,12 +543,6 @@ Authors' Addresses
    USA
 
    Email: dwing-ietf@fuggles.com
-
-
-
-
-
-
 
 
 

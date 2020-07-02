@@ -379,7 +379,7 @@
           used for authenticating the alternative service.
         </t>
         <t>
-        <figure align="center" anchor="ex" title="Response Example with "Glue" RR Information">
+        <figure align="center" anchor="ex" title="Response Example with Glue RR Information">
           <preamble></preamble>
           <artwork align="center"><![CDATA[{
   "associated-resolvers": {
