@@ -14,7 +14,7 @@ Expires: January 3, 2021                                        T. Reddy
 
 
         Supporting Redirection for DNS Queries over HTTPS (DoH)
-                 draft-btw-add-rfc8484-clarification-00
+                 draft-btw-add-rfc8484-clarification-02
 
 Abstract
 
@@ -241,7 +241,7 @@ Internet-Draft               DoH Redirection                   July 2020
        which is suboptimal.  Indeed, a redirect will only affect a
        unique request, and the DoH client will thus need to contact the
        origin server for every new request and get redirected, requiring
-       two roundtrips.  Also, permanent redirects [RFC7538] for all
+       two round-trips.  Also, permanent redirects [RFC7538] for all
        these queries would bloat the client's HTTP cache.
 
    2.  Using POST requests would solve the issue.  Nevertheless POST
@@ -293,10 +293,11 @@ Internet-Draft               DoH Redirection                   July 2020
 
    We consider two possibilities for service-level redirect:
 
-   1.  Extending [RFC7838] by relaxing the host authentication checks.
+   1.  Extending [RFC7838] by relaxing the host authentication checks
+       (Section 6.1).
 
    2.  Using the well-known URI specified in [I-D.pp-add-resinfo] to
-       return information about alternative services.
+       return information about alternative services (Section 6.2).
 
 6.1.  Extending Alternative Services
 
@@ -304,7 +305,7 @@ Internet-Draft               DoH Redirection                   July 2020
    hijack the communication to an origin.  This is the justification for
    the requirement in Section 2.1 of [RFC7838] that "Clients MUST have
    reasonable assurances that the alternative service is under control
-   of and valid for the whole origin.".
+   of and valid for the whole origin".
 
    However, when a DoH server presents an alternative DoH service to a
    DoH client, both the origin and alternative service, as well as the
@@ -328,7 +329,6 @@ Internet-Draft               DoH Redirection                   July 2020
    The example in Figure 1 shows what a JSON object might look like that
    specified one or more alternative services.  The structure of the
    response is inspired by Section 4.4.2 of [RFC7975].
-
 
 
 
@@ -368,13 +368,12 @@ Internet-Draft               DoH Redirection                   July 2020
 
             Figure 1: Response Example with Glue RR Information
 
-
 7.  Resource-Level Redirect
 
    Notwithstanding the issues with resource-level redirects described in
    Section 5, this section describes a proposal for returning the "glue"
    RRs required to avoid the bootstrapping issue described in that
-   section (but not the roundtrip or caching issues).
+   section (but not the round-trip or caching issues).
 
    Servers supporting DoH redirect MUST support returning the redirect
    response body mechanism described hereafter.
@@ -386,6 +385,7 @@ Internet-Draft               DoH Redirection                   July 2020
 
    Concretely, the DoH server returns in the response body a DNS
    response with an 'application/dns-message' media type as specified in
+
 
 
 
