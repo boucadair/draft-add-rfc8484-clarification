@@ -453,9 +453,8 @@
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
-      <section anchor="well_known" title="resinfo Well-Known URI
-                                          suffix">
-        <t>
+      <section anchor="well_known" title="resinfo Well-Known URI Suffix">
+        <t>This document requests IANA to assign the following well-known URI from the registry available at https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml.</t><t>
           <list>
             <t>URI suffix: resinfo</t>
             <t>Change controller: IETF</t>
