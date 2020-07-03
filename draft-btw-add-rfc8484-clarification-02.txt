@@ -6,11 +6,11 @@ ADD                                                         M. Boucadair
 Internet-Draft                                                    Orange
 Updates: 8484 (if approved)                                      N. Cook
 Intended status: Standards Track                            Open-Xchange
-Expires: January 3, 2021                                        T. Reddy
+Expires: January 4, 2021                                        T. Reddy
                                                                   McAfee
                                                                  D. Wing
                                                                   Citrix
-                                                            July 2, 2020
+                                                            July 3, 2020
 
 
         Supporting Redirection for DNS Queries over HTTPS (DoH)
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on January 3, 2021.
+   This Internet-Draft will expire on January 4, 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Boucadair, et al.        Expires January 3, 2021                [Page 1]
+Boucadair, et al.        Expires January 4, 2021                [Page 1]
 
 Internet-Draft               DoH Redirection                   July 2020
 
@@ -70,15 +70,17 @@ Table of Contents
    4.  RFC8484 Update  . . . . . . . . . . . . . . . . . . . . . . .   4
    5.  Issues with Redirection in DoH  . . . . . . . . . . . . . . .   4
    6.  Service-Level Redirect  . . . . . . . . . . . . . . . . . . .   6
-     6.1.  Extending Alternative Services  . . . . . . . . . . . . .   6
-     6.2.  Well-Known URI  . . . . . . . . . . . . . . . . . . . . .   6
+     6.1.  Well-Known URI  . . . . . . . . . . . . . . . . . . . . .   6
    7.  Resource-Level Redirect . . . . . . . . . . . . . . . . . . .   7
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
+     9.1.  resinfo Well-Known URI
+           suffix  . . . . . . . . . . . . . . . . . . . . . . . . .   8
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
      11.1.  Normative References . . . . . . . . . . . . . . . . . .   8
      11.2.  Informative References . . . . . . . . . . . . . . . . .   9
+   Appendix A.  Extending Alternative Services . . . . . . . . . . .  10
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
@@ -107,9 +109,7 @@ Table of Contents
 
 
 
-
-
-Boucadair, et al.        Expires January 3, 2021                [Page 2]
+Boucadair, et al.        Expires January 4, 2021                [Page 2]
 
 Internet-Draft               DoH Redirection                   July 2020
 
@@ -165,26 +165,24 @@ Internet-Draft               DoH Redirection                   July 2020
 
 
 
-Boucadair, et al.        Expires January 3, 2021                [Page 3]
+Boucadair, et al.        Expires January 4, 2021                [Page 3]
 
 Internet-Draft               DoH Redirection                   July 2020
 
 
-   o  clarify that unsolicited messages from a trusted DoH server should
-      be excluded.
+   o  clarify that unsolicited messages from a configured DoH server
+      should be excluded.
 
    A clarification is proposed in Section 4.  This clarification focuses
    on a "different URI" that might be discovered while communicating
    with an HTTP server.
 
    Additionally, assuming that redirection is allowed, this
-   specification recommends how it is achieved, specifically regarding
-   inline resolution of any domain name in the redirect URI.  This is
-   required because redirection to a domain-based URI requires DNS
-   resolution of that domain name, which creates a potential
-   bootstrapping problem (e.g., If DoH server is the only configured DNS
-   server, redirecting the client to a new server by presenting a name
-   will fail).
+   specification recommends how it is achieved.  This is required
+   because redirection to a domain-based URI requires DNS resolution of
+   that domain name, which creates a potential bootstrapping problem
+   (e.g., If DoH server is the only configured DNS server, redirecting
+   the client to a new server by presenting a name will fail).
 
 4.  RFC8484 Update
 
@@ -205,7 +203,7 @@ Internet-Draft               DoH Redirection                   July 2020
       Also, a DoH client MUST ignore an unsolicited response (such as
       through HTTP/2 server push) that appears to be a valid answer to a
       DNS query unless that response comes from a configured URI (as
-      described in Section 5.3).
+      described in Section 5.3 of [RFC8484]).
 
 5.  Issues with Redirection in DoH
 
@@ -218,38 +216,23 @@ Internet-Draft               DoH Redirection                   July 2020
    to redirect all requests to an entirely different server under the
    same administrative control, then the alternative service mechanism
    described in [RFC7838] might be sufficient.  However, there are
+   restrictions on the use of alternative services; specifically the
+   certificate presented by the alternative service must be valid for
 
 
 
-Boucadair, et al.        Expires January 3, 2021                [Page 4]
+Boucadair, et al.        Expires January 4, 2021                [Page 4]
 
 Internet-Draft               DoH Redirection                   July 2020
 
 
-   restrictions on the use of alternative services; specifically the
-   certificate presented by the alternative service must be valid for
    the origin.  This restriction means that alternative services cannot
    be used for use-cases such as redirecting the client to a locally
    administered DoH server (e.g., resolver or forwarder) which does not
    have a certificate valid for the origin.  Additionally, alternative
    services suffer from the bootstrapping issue described below.
 
-   The second issue is that HTTP redirection is done on a per-resource
-   basis; this presents several problems for DoH:
-
-   1.  Every GET request with a new query name will require redirection,
-       which is suboptimal.  Indeed, a redirect will only affect a
-       unique request, and the DoH client will thus need to contact the
-       origin server for every new request and get redirected, requiring
-       two round-trips.  Also, permanent redirects [RFC7538] for all
-       these queries would bloat the client's HTTP cache.
-
-   2.  Using POST requests would solve the issue.  Nevertheless POST
-       responses are not widely cached as per Section 4.2.3 of
-       [RFC7231], and mandating the use of POST requests for DoH in
-       order to enable redirection hardly seems reasonable.
-
-   The final issue with using HTTP redirection is bootstrapping; any
+   The second issue with using HTTP redirection is bootstrapping; any
    client that is relying solely upon a DoH server for resolution must
    be able to resolve the domain in the redirect response.  Even if a
    DoH client has a plaintext DNS resolver configured, using that
@@ -259,6 +242,21 @@ Internet-Draft               DoH Redirection                   July 2020
    that may then lead to a further redirect response.  Another solution
    is for the DoH server to include additional information in the
    response, similar to the "glue" records as defined in [RFC7719].
+
+   The final issue is that HTTP redirection is done on a per-resource
+   basis; this presents several problems for DoH:
+
+   1.  Every GET request with a new query name will require redirection,
+       which is suboptimal.  Indeed, a redirect will only affect a
+       unique request, and the DoH client will thus need to contact the
+       origin server for every new request and get redirected, requiring
+       two roundtrips.  Also, permanent redirects [RFC7538] for all
+       these queries would bloat the client's HTTP cache.
+
+   2.  Using POST requests would solve the issue.  Nevertheless POST
+       responses are not widely cached as per Section 4.2.3 of
+       [RFC7231], and mandating the use of POST requests for DoH in
+       order to enable redirection hardly seems reasonable.
 
    The above issues would seem to indicate that despite the intention of
    [RFC8484] to align itself with HTTP redirection, some additional work
@@ -273,75 +271,72 @@ Internet-Draft               DoH Redirection                   July 2020
        alternative service for all future queries, rather than on a per-
        resource basis.
 
+   2.  Resource-Level Redirect: Solving the bootstrapping problem for
+       regular HTTP redirects.  Note that this doesn't solve the caching
+       issues described above, and does raise the question of whether
 
 
 
-
-Boucadair, et al.        Expires January 3, 2021                [Page 5]
+Boucadair, et al.        Expires January 4, 2021                [Page 5]
 
 Internet-Draft               DoH Redirection                   July 2020
 
 
-   2.  Resource-Level Redirect: Solving the bootstrapping problem for
-       regular HTTP redirects.  Note that this doesn't solve the caching
-       issues described above, and does raise the question of whether
        regular HTTP redirection is desirable or worthwhile (i.e., are
        there any valid use-cases for resource-level redirection in
        DoH?).
 
 6.  Service-Level Redirect
 
-   We consider two possibilities for service-level redirect:
+   We considered two possibilities for service-level redirect:
 
-   1.  Extending [RFC7838] by relaxing the host authentication checks
-       (Section 6.1).
+   1.  Extending [RFC7838] by relaxing the host authentication checks.
 
-   2.  Using the well-known URI specified in [I-D.pp-add-resinfo] to
-       return information about alternative services (Section 6.2).
+   2.  Using a well-known URI to return information about alternative
+       services.
 
-6.1.  Extending Alternative Services
+   Extending alternative services was considered, but rejected (see
+   Appendix A for the reasons) in favour of the well-known URI approach.
 
-   Section 9.2 of [RFC7838] discusses the possibilities for attackers to
-   hijack the communication to an origin.  This is the justification for
-   the requirement in Section 2.1 of [RFC7838] that "Clients MUST have
-   reasonable assurances that the alternative service is under control
-   of and valid for the whole origin".
+6.1.  Well-Known URI
 
-   However, when a DoH server presents an alternative DoH service to a
-   DoH client, both the origin and alternative service, as well as the
-   DNS queries and responses, must be, by definition, resistant to MITM
-   attacks.  Thus it could be argued that in these circumstances,
-   relaxing the host authentication requirements is justified.  The
-   relaxation could be limited, e.g., still requiring some relationship
-   between the origin and the alternative, or unlimited, allowing no
-   such relationship to exist.
-
-   The bootstrapping issues described in Section 5 still apply, which
-   may make this proposal unsuitable for wide deployment.
-
-6.2.  Well-Known URI
-
-   Section 3 of [I-D.pp-add-resinfo] allows the use of a well-known URI
-   to retrieve resolver information, which presumably could include
-   specifying alternative services, through the use of a JSON object in
-   the RESINFO response RR.
+   We propose the use of the well-known URI mechanism [RFC8615], with
+   the name "resinfo" to retrieve resolver information, which could
+   include specifying alternative services, through the use of a JSON
+   object in the response payload.  A well-known URI would thus look
+   like "https://doh.example.com/.well-known/resinfo".
 
    The example in Figure 1 shows what a JSON object might look like that
    specified one or more alternative services.  The structure of the
    response is inspired by Section 4.4.2 of [RFC7975].
 
-
-
-
-Boucadair, et al.        Expires January 3, 2021                [Page 6]
-
-Internet-Draft               DoH Redirection                   July 2020
-
-
    Note that the response includes "glue" RR information to allow the
    alternative service to be accessed without further DNS queries, and
    includes an authenticated domain name to be used for authenticating
    the alternative service.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires January 4, 2021                [Page 6]
+
+Internet-Draft               DoH Redirection                   July 2020
+
 
           {
             "associated-resolvers": {
@@ -368,12 +363,13 @@ Internet-Draft               DoH Redirection                   July 2020
 
             Figure 1: Response Example with Glue RR Information
 
+
 7.  Resource-Level Redirect
 
    Notwithstanding the issues with resource-level redirects described in
    Section 5, this section describes a proposal for returning the "glue"
    RRs required to avoid the bootstrapping issue described in that
-   section (but not the round-trip or caching issues).
+   section (but not the roundtrip or caching issues).
 
    Servers supporting DoH redirect MUST support returning the redirect
    response body mechanism described hereafter.
@@ -385,20 +381,19 @@ Internet-Draft               DoH Redirection                   July 2020
 
    Concretely, the DoH server returns in the response body a DNS
    response with an 'application/dns-message' media type as specified in
-
-
-
-
-Boucadair, et al.        Expires January 3, 2021                [Page 7]
-
-Internet-Draft               DoH Redirection                   July 2020
-
-
    Section 6 of [RFC8484], containing any A and AAAA records for the
    domain name in the redirect URI, including any CNAMEs.
 
    For example, if the redirect URI contains the domain name
    "redirect.example.com", and "redirect.example.com" is a CNAME
+
+
+
+Boucadair, et al.        Expires January 4, 2021                [Page 7]
+
+Internet-Draft               DoH Redirection                   July 2020
+
+
    pointing to "real.example.com", then an example response body would
    contain:
 
@@ -424,7 +419,15 @@ Internet-Draft               DoH Redirection                   July 2020
 
 9.  IANA Considerations
 
-   This document does not request any action from IANA.
+9.1.  resinfo Well-Known URI suffix
+
+      URI suffix: resinfo
+
+      Change controller: IETF
+
+      Specification document(s): This document
+
+      Status: permanent
 
 10.  Acknowledgements
 
@@ -435,25 +438,17 @@ Internet-Draft               DoH Redirection                   July 2020
 
 11.1.  Normative References
 
-   [I-D.pp-add-resinfo]
-              Sood, P. and P. Hoffman, "DNS Resolver Information Self-
-              publication", draft-pp-add-resinfo-02 (work in progress),
-              June 2020.
-
-
-
-
-
-
-Boucadair, et al.        Expires January 3, 2021                [Page 8]
-
-Internet-Draft               DoH Redirection                   July 2020
-
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+Boucadair, et al.        Expires January 4, 2021                [Page 8]
+
+Internet-Draft               DoH Redirection                   July 2020
+
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -486,6 +481,10 @@ Internet-Draft               DoH Redirection                   July 2020
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
 
+   [RFC8615]  Nottingham, M., "Well-Known Uniform Resource Identifiers
+              (URIs)", RFC 8615, DOI 10.17487/RFC8615, May 2019,
+              <https://www.rfc-editor.org/info/rfc8615>.
+
 11.2.  Informative References
 
    [I-D.ietf-httpbis-bcp56bis]
@@ -501,7 +500,8 @@ Internet-Draft               DoH Redirection                   July 2020
 
 
 
-Boucadair, et al.        Expires January 3, 2021                [Page 9]
+
+Boucadair, et al.        Expires January 4, 2021                [Page 9]
 
 Internet-Draft               DoH Redirection                   July 2020
 
@@ -511,6 +511,28 @@ Internet-Draft               DoH Redirection                   July 2020
               Delivery Network (CDN) Interconnection", RFC 7975,
               DOI 10.17487/RFC7975, October 2016,
               <https://www.rfc-editor.org/info/rfc7975>.
+
+Appendix A.  Extending Alternative Services
+
+   Section 9.2 of [RFC7838] discusses the possibilities for attackers to
+   hijack the communication to an origin.  This is the justification for
+   the requirement in Section 2.1 of [RFC7838] that "Clients MUST have
+   reasonable assurances that the alternative service is under control
+   of and valid for the whole origin.".
+
+   However, when a DoH server presents an alternative DoH service to a
+   DoH client, both the origin and alternative service, as well as the
+   DNS queries and responses, must be, by definition, resistant to MITM
+   attacks.  Thus it could be argued that in these circumstances,
+   relaxing the host authentication requirements is justified.  The
+   relaxation could be limited, e.g., still requiring some relationship
+   between the origin and the alternative, or unlimited, allowing no
+   such relationship to exist.
+
+   However the bootstrapping issues described in Section 5 still apply,
+   and there is no mechanism for the DoH server to specify an
+   authenticated domain name to use to authenticate the alternative
+   service, making this proposal unsuitable for deployment.
 
 Authors' Addresses
 
@@ -527,6 +549,17 @@ Authors' Addresses
    UK
 
    Email: neil.cook@noware.co.uk
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires January 4, 2021               [Page 10]
+
+Internet-Draft               DoH Redirection                   July 2020
 
 
    Tirumaleswar Reddy
@@ -557,4 +590,27 @@ Authors' Addresses
 
 
 
-Boucadair, et al.        Expires January 3, 2021               [Page 10]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Boucadair, et al.        Expires January 4, 2021               [Page 11]
